@@ -1,10 +1,13 @@
+# Include supporting routines for indicator calculations
+source("CalculateIndicatorSupport.R")
+
 # Aggregation principle used for Chlorophyll
 Aggregate_year_station <- function(df) {
   yearmeans <- df %>%    group_by(year,station) %>%
-                         summarise(xvar = mean(xvar)) %>%
-                         group_by(year) %>%
-                         summarise(xvar = mean(xvar))
-                         
+    summarise(xvar = mean(xvar)) %>%
+    group_by(year) %>%
+    summarise(xvar = mean(xvar))
+  
   periodmean <- mean(yearmeans$xvar)
   res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
   return(res)
@@ -34,7 +37,7 @@ Aggregate_period <- function(df) {
 AggregateEQR_year_station <- function(df) {
   
   df <- mutate(df,xvarEQR = ifelse(xvar<RefCond,1,RefCond/xvar))
-
+  
   yearmeans <- df %>%    group_by(year,station) %>%
     summarise(xvarEQR = mean(xvarEQR)) %>%
     group_by(year) %>%
@@ -78,11 +81,11 @@ BQIbootstrap <- function(df) {
   Nyearstat <- yearstatmeans %>% group_by(year) %>% summarise(n_station = length(xvar))
   BQIsimyear <- mat.or.vec(length(Nyearstat$n_station), 1)
   for(i in 1:length(Nyearstat$n_station)) {
-     BQIsim <- trunc(runif(9999,1,Nyearstat$n_station[i]+1))
-     BQIsim <- yearstatmeans$xvar[yearstatmeans$year == Nyearstat$year[i]][BQIsim]
-     BQIsimyear[i] <- quantile(BQIsim,probs=0.2)
+    BQIsim <- trunc(runif(9999,1,Nyearstat$n_station[i]+1))
+    BQIsim <- yearstatmeans$xvar[yearstatmeans$year == Nyearstat$year[i]][BQIsim]
+    BQIsimyear[i] <- quantile(BQIsim,probs=0.2)
   }
-
+  
   periodmean <- mean(BQIsimyear)
   yearmeans <- data.frame(year=Nyearstat$year,xvar = BQIsimyear)
   res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
@@ -119,11 +122,11 @@ OxygenTest2 <- function(df) {
   df <- df %>% group_by(station,date,time,station_depth,depth) %>% filter(is.na(xvar) == FALSE)
   # find depth for 3.5 ml/l by extrapolation, when this threshold is not in the profile
   O2bottom_ext <- df %>% group_by(station,date,time,station_depth) %>% summarise(n_obs =n(),
-                        O2bottom1 = xvar[which.max(depth)],O2bottom2 = ifelse(n_obs>1,xvar[which.max(depth)-1],NA),
-                        depth1 = depth[which.max(depth)],depth2 =ifelse(n_obs>1,depth[which.max(depth)-1],NA),
-                        O2clinedepth_max=ifelse(n_obs>1,ifelse(O2bottom1>3.5 && O2bottom2-O2bottom1>0,depth1+(3.5-O2bottom1)/(O2bottom2-O2bottom1)*(depth2-depth1),1000),NA))  # find profile statistics for tests and indicator calculation
+                                                                                 O2bottom1 = xvar[which.max(depth)],O2bottom2 = ifelse(n_obs>1,xvar[which.max(depth)-1],NA),
+                                                                                 depth1 = depth[which.max(depth)],depth2 =ifelse(n_obs>1,depth[which.max(depth)-1],NA),
+                                                                                 O2clinedepth_max=ifelse(n_obs>1,ifelse(O2bottom1>3.5 && O2bottom2-O2bottom1>0,depth1+(3.5-O2bottom1)/(O2bottom2-O2bottom1)*(depth2-depth1),1000),NA))  # find profile statistics for tests and indicator calculation
   O2bottom <- df %>% group_by(station,date,time,station_depth) %>% summarise(n_obs =n(), O2range = range(xvar)[2]-range(xvar)[1],
-                        max_depth=max(depth),O2bottom = xvar[which.max(depth)],O2clinedepth = ifelse(n_obs>1 && O2range>0,approx(xvar,depth,c(3.5))$y,NA))
+                                                                             max_depth=max(depth),O2bottom = xvar[which.max(depth)],O2clinedepth = ifelse(n_obs>1 && O2range>0,approx(xvar,depth,c(3.5))$y,NA))
   # If O2clinedepth is not in the profile then use the extrapolated value
   O2bottom <- full_join(O2bottom,O2bottom_ext,c("station","date","time","station_depth"))
   O2bottom <- O2bottom %>% mutate(O2clinedepth = ifelse(is.na(O2clinedepth),O2clinedepth_max,O2clinedepth),depth1 = NULL, depth2 = NULL, O2bottom1 = NULL, O2bottom2 = NULL, O2clinedepth_max = NULL)
@@ -132,7 +135,7 @@ OxygenTest2 <- function(df) {
   # Calculate test1 as average of O2 observations at bottom (<1.5 m from bottom depth) below the 25-percentile for Jan-Dec
   lower_quantile <- quantile(O2bottom$O2bottom,na.rm=TRUE)[2]
   df1 <- O2bottom %>% filter(station_depth-max_depth<1.5) %>% filter(O2bottom<=lower_quantile) %>% mutate(year=lubridate::year(date))
-#  df1 <- df %>% filter(station_depth-depth<1.5) %>% filter(xvar<=quantile(xvar,na.rm=TRUE)[2])
+  #  df1 <- df %>% filter(station_depth-depth<1.5) %>% filter(xvar<=quantile(xvar,na.rm=TRUE)[2])
   O2_test1 <- mean(df1$O2bottom)
   O2_test1_yearmeans <- df1 %>% group_by(year) %>% summarise(O2bottom = mean(O2bottom))
   O2_test1_yearmeans <- left_join(years,O2_test1_yearmeans,c("year"))
@@ -143,9 +146,9 @@ OxygenTest2 <- function(df) {
   df2 <- O2bottom %>% mutate(month = lubridate::month(date),year = lubridate::year(date)) %>% filter(month %in% c(1,2,3,4,5))
   # Return from function if no observations available (Jan-May) for calculation of O2_test2
   if (nrow(df2) == 0) {
-    yearmeans <- df %>% group_by(year) %>% summarise(xvar = NA)
+    yearmeans <- df %>% group_by(year) %>% summarise(xvar = NA)  # Return NA values in res
     res <- list(periodmean=NA,yearmeans=yearmeans,error_code=-91)
-    return(res)
+    return(list(error_code=-91))
   }
   O2_test2 <- mean(df2$O2bottom)
   O2_test2_yearmeans <- df2 %>% group_by(year) %>% summarise(O2bottom = mean(O2bottom))
@@ -157,8 +160,7 @@ OxygenTest2 <- function(df) {
   # Calculate EQR from Table 7.1 in Handbook
   EQR_test2 <- approx(BoundariesHypoxicArea,c(0,0.2,0.4,0.6,0.8,1),hyparea,yleft=0,yright=1)$y
   EQR_test2_yearmeans <- approx(BoundariesHypoxicArea,c(0,0.2,0.4,0.6,0.8,1),hyparea_yearmeans$area_hyp,yleft=0,yright=1)$y
-  
-  O2_test1<-ifelse(is.nan(O2_test1),0,O2_test1) #line added by Ciarán 2018-04-19
+  O2_test1<-ifelse(is.nan(O2_test1),0,O2_test1) # Set O2_test1 to zero if no data to complete the if-clause below
   if (O2_test1>3.5 || O2_test2>3.5) {
     res <- list(periodmean=EQR_test1,yearmeans=data.frame(year=O2_test1_yearmeans$year,xvar = EQR_test1_yearmeans),error_code=0)
   } else {
@@ -169,6 +171,7 @@ OxygenTest2 <- function(df) {
 
 #' Generic routine for calculating indicator statistics
 #' 
+#' @param Indicator The name identifier for the indicator to be calculated. 
 #' @param df A dataframe with monitoring data from the Swedish Monitoring program. 
 #'   The dataframe should contain the
 #'   following variables:
@@ -185,7 +188,6 @@ OxygenTest2 <- function(df) {
 #' @param startyear The first year in the indicator calculation
 #' @param endyear The last year in the indicator calculation
 #' @param n_iter Number of iterations for Monte Carlo simulation
-#' @param confidence_lvl Specification of confidence interval for indicator value
 #'   
 #' @return
 #' @export
@@ -194,9 +196,9 @@ OxygenTest2 <- function(df) {
 
 CalculateIndicator <-
   function(Indicator,df,RefCond_sali,var_list,MonthInclude,startyear,endyear,n_iter=1000) {
-# Set flag to zero and change it for error handling below
+    # Set flag to zero and change it for error handling below
     flag <- 0
-# Select the observation variable for the indicator
+    # Select the observation variable for the indicator
     xvar <- switch(Indicator,
                    CoastChla         = df$chla,
                    CoastChlaEQR      = df$chla,
@@ -220,7 +222,7 @@ CalculateIndicator <-
                    CoastBQI          = df$BQI,
                    CoastMSMDI        = df$MSMDI)
     df <- mutate(df,xvar=xvar)
-# Associating indicators with transformation from observations
+    # Associating indicators with transformation from observations
     f_fun <- switch(Indicator,
                     CoastChla         = Aggregate_year_station,
                     CoastChlaEQR      = AggregateEQR_year_station,
@@ -243,7 +245,7 @@ CalculateIndicator <-
                     CoastOxygen       = OxygenTest2,
                     CoastBQI          = BQIbootstrap,
                     CoastMSMDI        = Aggregate_period)
-# Assigning transformations for measurements to obtain normal distributed variates
+    # Assigning transformations for measurements to obtain normal distributed variates
     g_fun <- switch(Indicator,
                     CoastChla         = log,
                     CoastChlaEQR      = log,
@@ -266,63 +268,63 @@ CalculateIndicator <-
                     CoastOxygen       = identity,
                     CoastBQI          = identity,
                     CoastMSMDI        = logit_w_replace)    
-# Assigning inverse transformations of g_fun
+    # Assigning inverse transformations of g_fun
     g_fun_inv <- switch(Indicator,
-                    CoastChla         = exp,
-                    CoastChlaEQR      = exp,
-                    CoastBiovol       = exp,
-                    CoastBiovolEQR    = exp,
-                    CoastSecchi       = exp,
-                    CoastSecchiEQR    = exp,
-                    CoastDINwinter    = exp,
-                    CoastDINwinterEQR = exp,
-                    CoastDIPwinter    = exp,
-                    CoastDIPwinterEQR = exp,
-                    CoastTNsummer     = exp,
-                    CoastTNsummerEQR  = exp,
-                    CoastTNwinter     = exp,
-                    CoastTNwinterEQR  = exp,
-                    CoastTPsummer     = exp,
-                    CoastTPsummerEQR  = exp,
-                    CoastTPwinter     = exp,
-                    CoastTPwinterEQR  = exp,
-                    CoastOxygen       = identity,
-                    CoastBQI          = identity,
-                    CoastMSMDI        = plogis) 
-# Switch year for winter months (Nov+Dec) to include together with (Jan+Feb)
+                        CoastChla         = exp,
+                        CoastChlaEQR      = exp,
+                        CoastBiovol       = exp,
+                        CoastBiovolEQR    = exp,
+                        CoastSecchi       = exp,
+                        CoastSecchiEQR    = exp,
+                        CoastDINwinter    = exp,
+                        CoastDINwinterEQR = exp,
+                        CoastDIPwinter    = exp,
+                        CoastDIPwinterEQR = exp,
+                        CoastTNsummer     = exp,
+                        CoastTNsummerEQR  = exp,
+                        CoastTNwinter     = exp,
+                        CoastTNwinterEQR  = exp,
+                        CoastTPsummer     = exp,
+                        CoastTPsummerEQR  = exp,
+                        CoastTPwinter     = exp,
+                        CoastTPwinterEQR  = exp,
+                        CoastOxygen       = identity,
+                        CoastBQI          = identity,
+                        CoastMSMDI        = plogis) 
+    # Switch year for winter months (Nov+Dec) to include together with (Jan+Feb)
     if (Indicator %in% c("CoastTNwinter","CoastTNwinterEQR","CoastTPwinter","CoastTPwinterEQR")) {
       df <- mutate(df,year=ifelse(month %in% c(11,12),year+1,year))
     }
-# Filter dataframe to include observations used in indicator only
+    # Filter dataframe to include observations used in indicator only
     df <- Filter_df(df,MonthInclude,startyear,endyear)    
-# setting RefCond depending on salinity for indicators with salinity correction
+    # setting RefCond depending on salinity for indicators with salinity correction
     RefCond <- mat.or.vec(nrow(df), 1)
     if (Indicator %in% c("CoastChlaEQR","CoastSecchiEQR","CoastDINsummerEQR","CoastDIPsummerEQR","CoastTNsummerEQR","CoastTPsummerEQR","CoastTNwinterEQR","CoastTPwinterEQR")) {
-       df <- filter(df,!is.na(sali))
-       RefCond <- mat.or.vec(nrow(df), 1)
-       sali_class <- findInterval(df$sali, c(seq(0, 35)))
-       for (i in 1:nrow(df)) {RefCond[i] <- RefCond_sali[sali_class[i]]}
-       }
+      df <- filter(df,!is.na(sali))
+      RefCond <- mat.or.vec(nrow(df), 1)
+      sali_class <- findInterval(df$sali, c(seq(0, 35)))
+      for (i in 1:nrow(df)) {RefCond[i] <- RefCond_sali[sali_class[i]]}
+    }
     df <- mutate(df,RefCond = RefCond) 
-# Calculate number of years, stations, months, institutions and combinations thereof in df 
+    # Calculate number of years, stations, months, institutions and combinations thereof in df 
     ndf <- DF_Ncalculation(df)
     # Return from function if no observations for calculation
     if (ndf$n_obs == 0) return(list(result_code=-90))
-# Estimate mean of the transformed observation for simulation
+    # Estimate mean of the transformed observation for simulation
     alpha <- df %>% group_by(year) %>% summarise(mean = mean(g_fun(xvar),na.rm=TRUE))
-# Calculate indicator
+    # Calculate indicator
     mu_indicator <- f_fun(df)
-# Simulate system with random variables for estimating the variance of the indicator
+    # Simulate system with random variables for estimating the variance of the indicator
     simres <- vector("numeric",n_iter)
     simresyear <- matrix(nrow=ndf$n_year,ncol=n_iter)
     simrescode <- vector("numeric",n_iter)
-# simulation loop - simres contains the residuals from n_iter simulations
+    # simulation loop - simres contains the residuals from n_iter simulations
     for (isim in 1:n_iter) {
       # simulate variations in the random factors using the data structure
       if (Indicator == "CoastOxygen") {
-         simulobs <- SetVector_IndicatorSimO2(alpha$mean,ndf,var_list,df,length(MonthInclude))
+        simulobs <- SetVector_IndicatorSimO2(alpha$mean,ndf,var_list,df,length(MonthInclude))
       } else {
-         simulobs <- SetVector_IndicatorSim(alpha$mean,ndf,var_list,df,length(MonthInclude))
+        simulobs <- SetVector_IndicatorSim(alpha$mean,ndf,var_list,df,length(MonthInclude))
       }
       # backtransform simulations from log domain to original domain
       simulobs <- g_fun_inv(simulobs)
@@ -333,19 +335,19 @@ CalculateIndicator <-
       # Check for errors in simulations
       simrescode[isim] <- simul_indicator$error_code
       if (simul_indicator$error_code == 0) {
-         simresyear[,isim]=simul_indicator$yearmeans$xvar
-         simres[isim] <- simul_indicator$periodmean
+        simresyear[,isim]=simul_indicator$yearmeans$xvar
+        simres[isim] <- simul_indicator$periodmean
       } else{
-        simresyear[,isim] <- NA
-        simres[isim] <- NA
+        simresyear[,isim] = NA
+        simres[isim] = NA
       }
     } # end simulation loop
     
-# Adjust simulations to have zero mean and then add indicator means - bias correction
+    # Adjust simulations to have zero mean and then add indicator means - bias correction
     simres <- g_fun_inv(g_fun(simres)-g_fun(mean(simres))+g_fun(mu_indicator$periodmean))
     simresyear <- g_fun_inv(g_fun(simresyear)-g_fun(apply(simresyear,1,mean))+g_fun(mu_indicator$yearmeans$xvar))
     
-# Calculate statistics
+    # Calculate statistics
     period <- data.frame(mean=mean(simres),stderr=sd(simres),
                          lower_1  = quantile(simres,probs=0.005,na.rm=TRUE),
                          lower_5  = quantile(simres,probs=0.025,na.rm=TRUE),
@@ -362,7 +364,7 @@ CalculateIndicator <-
                          upper_1  = apply(simresyear,1,quantile,probs=0.995,na.rm=TRUE))
     # Check if there is at least 3 years of data - generic criterion?
     flag <- ifelse(length(annual$mean)<3,-1,flag)
-
+    
     res <- list(period=period,annual=annual,indicator_sim=simres,result_code=flag)
     return(res)
   }
@@ -385,31 +387,30 @@ CalculateIndicator <-
 #' @param startyear The first year in the indicator calculation
 #' @param endyear The last year in the indicator calculation
 #' @param n_iter Number of iterations for Monte Carlo simulation
-#' @param confidence_lvl Specification of confidence interval for indicator value
 #'   
 #' @return An uncertainty object
 #' @export
 #' 
 #' @examples 
 CalculateIndicatorType <-
-  function(Indicator,unc_list,var_list,ntype_WB,startyear,endyear,n_iter=1000,confidence_lvl=0.95) {
-# Set flag to zero and change it for error handling below
+  function(Indicator,unc_list,var_list,ntype_WB,startyear,endyear,n_iter=1000) {
+    # Set flag to zero and change it for error handling below
     flag <- 0
-# Calculations on list of uncertainty objects
+    # Calculations on list of uncertainty objects
     n_WB <- length(unc_list)
     n_yearlist <- vector("numeric",n_WB)
-    for (i in 1:n_WB) {n_yearlist[i] <- unc_list[[i]]$n_list$n_year}
+    for (i in 1:n_WB) {n_yearlist[i] <- nrow(unc_list[[i]]$annual)}
     n_year <- max(n_yearlist)
     n_WByear <- sum(n_yearlist)
     # Return from function if no information from other WBs is available for calculation
     if (n_WB == 0)  return(list(result_code=-80))
-# Organise data from uncertainty objects into vectors and matrices
+    # Organise data from uncertainty objects into vectors and matrices
     periodWB_mean <- vector("numeric",n_WB)
     periodWB_stderr <- vector("numeric",n_WB)
     annualWB_year <- vector("numeric",n_WByear)
     annualWB_yearmean <- vector("numeric",n_WByear)
     annualWB_yearstderr <- vector("numeric",n_WByear)
-    annual_unc_list <- matrix(n_year,n_WB)
+    #    annual_unc_list <- matrix(n_year,n_WB)
     icount <- 0
     for (i in 1:n_WB) {
       periodWB_mean[i] <- unc_list[[i]]$period$mean
@@ -421,14 +422,14 @@ CalculateIndicatorType <-
         annualWB_yearstderr[icount] <- unc_list[[i]]$annual$stderr[j]
       }
     }
-# Find distributions for period and annual means, add variance contribution from variation among WBs
+    # Find distributions for period and annual means, add variance contribution from variation among WBs
     period_mean <- mean(periodWB_mean)
     period_stderr <- sqrt(stderr_aggr(periodWB_stderr)^2+var_list$V_WBperiod*(1-n_WB/ntype_WB))
     annual_WB <- data.frame(year=annualWB_year,mean=annualWB_yearmean,stderr=annualWB_yearstderr)
     annual <- annual_WB %>% group_by(year) %>% summarise(mean = mean(mean),stderr = sqrt(stderr_aggr(periodWB_stderr)^2+var_list$V_WBannual*(1-n_WB/ntype_WB)))
-# Simulate distribution
+    # Simulate distribution - the aggregate across WBs is assumed normal distributed
     simres <- rnorm(1000,mean=period_mean,sd=period_stderr)
-# calculate information for uncertainty object
+    # calculate information for uncertainty object
     period <- data.frame(mean=period_mean,stderr=period_stderr,
                          lower_1  = qnorm(0.005,period_mean,period_stderr),
                          lower_5  = qnorm(0.025,period_mean,period_stderr),
@@ -443,7 +444,7 @@ CalculateIndicatorType <-
                          upper_10 = qnorm(0.95,annual$mean,annual$stderr),
                          upper_5  = qnorm(0.975,annual$mean,annual$stderr),
                          upper_1  = qnorm(0.995,annual$mean,annual$stderr))
-
+    
     res <- list(period=period,annual=annual,indicator_sim=simres,result_code=flag)
     return(res)
   }    

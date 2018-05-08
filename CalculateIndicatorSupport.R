@@ -29,18 +29,18 @@
 #' 
 DF_Ncalculation <-
   function(df) {
-           n_obs <- nrow(df)
-           n_station <- length(unique(df$station))
-           n_obspoint <- nrow(unique(data.frame(df$station,df$obspoint)))
-           n_year <- length(unique(df$year))
-           n_month <- length(unique(df$month))
-           n_yearmonth <- nrow(unique(data.frame(df$year,df$month)))
-           n_stationyear <- nrow(unique(data.frame(df$station,df$year)))
-           n_stationmonth <- nrow(unique(data.frame(df$station,df$month)))
-           n_stationdate <- nrow(unique(data.frame(df$station,df$date)))
-           n_institution <- length(unique(df$institution))
-           res <- list(n_obs=n_obs,n_station=n_station,n_obspoint=n_obspoint,n_year=n_year,n_month=n_month,n_yearmonth=n_yearmonth,n_stationyear=n_stationyear,n_stationmonth=n_stationmonth,n_stationdate=n_stationdate,n_institution=n_institution)
-           return(res)
+    n_obs <- nrow(df)
+    n_station <- length(unique(df$station))
+    n_obspoint <- nrow(unique(data.frame(df$station,df$obspoint)))
+    n_year <- length(unique(df$year))
+    n_month <- length(unique(df$month))
+    n_yearmonth <- nrow(unique(data.frame(df$year,df$month)))
+    n_stationyear <- nrow(unique(data.frame(df$station,df$year)))
+    n_stationmonth <- nrow(unique(data.frame(df$station,df$month)))
+    n_stationdate <- nrow(unique(data.frame(df$station,df$date)))
+    n_institution <- length(unique(df$institution))
+    res <- list(n_obs=n_obs,n_station=n_station,n_obspoint=n_obspoint,n_year=n_year,n_month=n_month,n_yearmonth=n_yearmonth,n_stationyear=n_stationyear,n_stationmonth=n_stationmonth,n_stationdate=n_stationdate,n_institution=n_institution)
+    return(res)
   }
 
 #' Function SimVector generates a vector of n random normal variates 
@@ -134,7 +134,7 @@ Filter_df <-
     # Remove observations with missing values    
     df <- filter(df,!is.na(xvar))
     # Use the generic name yvar for the variable
-#    df$yvar<-df[,var]
+    #    df$yvar<-df[,var]
     return(df)
   }
 
