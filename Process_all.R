@@ -6,7 +6,8 @@
 rm(list = ls())
 
 library(RSQLite)
-library(tidyverse)
+library(dplyr)
+library(tidyr)
 library(haven)
 library(lubridate)
 library(prodlim)
