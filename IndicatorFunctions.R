@@ -148,7 +148,7 @@ OxygenTest2 <- function(df) {
   if (nrow(df2) == 0) {
     yearmeans <- df %>% group_by(year) %>% summarise(xvar = NA)  # Return NA values in res
     res <- list(periodmean=NA,yearmeans=yearmeans,error_code=-91)
-    return(list(error_code=-91))
+    return(res)
   }
   O2_test2 <- mean(df2$O2bottom)
   O2_test2_yearmeans <- df2 %>% group_by(year) %>% summarise(O2bottom = mean(O2bottom))
@@ -428,7 +428,7 @@ CalculateIndicatorType <-
     annual_WB <- data.frame(year=annualWB_year,mean=annualWB_yearmean,stderr=annualWB_yearstderr)
     annual <- annual_WB %>% group_by(year) %>% summarise(mean = mean(mean),stderr = sqrt(stderr_aggr(periodWB_stderr)^2+var_list$V_WBannual*(1-n_WB/ntype_WB)))
     # Simulate distribution - the aggregate across WBs is assumed normal distributed
-    simres <- rnorm(1000,mean=period_mean,sd=period_stderr)
+    simres <- rnorm(n_iter,mean=period_mean,sd=period_stderr)
     # calculate information for uncertainty object
     period <- data.frame(mean=period_mean,stderr=period_stderr,
                          lower_1  = qnorm(0.005,period_mean,period_stderr),
