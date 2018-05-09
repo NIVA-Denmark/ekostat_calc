@@ -8,7 +8,7 @@ rm(list = ls())
 library(RSQLite)
 library(dplyr)
 library(tidyr)
-library(haven)
+#library(haven)
 library(lubridate)
 library(prodlim)
 library(matrixStats)
@@ -25,13 +25,7 @@ source("ReadVariances.R")
 start_time <- Sys.time()
 nSimMC <- 1000 #20 #1  #number of Monte Carlo simulations
 
-df_water<-read_sas("data/coast_watersamples.sas7bdat") #19824
-df_o2<-read_sas("data/coast_oxygen.sas7bdat")          #94747
-df_bqi<-read_sas("data/coast_bqi.sas7bdat")            # 7142
-df_msmdi<-read_sas("data/coast_msmdi.sas7bdat")        # 1089
-
-df <- bind_rows(df_water,df_o2,df_bqi,df_msmdi)
-df <- df %>% mutate(WB_ID=paste0("SE",WB_ID))
+load("data/SASdata.Rda")
 
 #Read waterbody data
 df_wb <- read.table("data/waterbodies.txt",fileEncoding = "UTF-8",
