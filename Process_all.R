@@ -23,7 +23,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 1000 #20 #1  #number of Monte Carlo simulations
+nSimMC <- 2 #20 #1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 
@@ -54,22 +54,23 @@ df[df$WB_ID=="SE634210-202020", "type"] <- "22"        #Holmsund*
 # *In VISS, I can only find vatttendrag with this name but it is SE1 and Luleå kommun
 
 #Fix records with missing type, using other records for the same waterbody
+df <- df %>% 
+  mutate(type=ifelse(substr(type,1,1)=="0",substr(type,2,4),type))  
+  # %>% rename(typology=type)
+
 type<-df %>% filter(!type=="") %>% group_by(WB_ID,type) %>% summarise() %>%
   rename(type2=type)
 
 df <- df %>% left_join(type,by=c("WB_ID"="WB_ID")) %>% mutate(type=ifelse(type=="",type2,type)) %>% select(-type2)
 
-df <- df %>% select(DistrictID,type,station,WB_name,WB_ID,institution,station_depth,
+df <- df %>% select(DistrictID,typology=type,station,WB_name,WB_ID,institution,station_depth,
                     date,time,temp,sali,depth,secchi,
                     DIN,DIP,TN,TP,chla,biovol,O2,BQI,MSMDI)
 
-df$WB <- paste0(df$WB_ID, " ", df$WB_name)
+#df$WB <- paste0(df$WB_ID, " ", df$WB_name)
+df$WB <- df$WB_ID
 df$obspoint <- df$station
-
-df <- df %>% 
-  mutate(type=ifelse(substr(type,1,1)=="0",substr(type,2,4),type)) %>% 
-  rename(typology=type)
-
+#df<-df %>% filter(WB=="SE564250-162500")
 
 df <- df %>% mutate(year=year(date),month=month(date)) %>% 
   mutate(period=ifelse(year<2004,NA,ifelse(year<2010,"2004-2009",ifelse(year<2016,"2010-2015","2016-2021"))))
@@ -102,32 +103,50 @@ IndList<-c("CoastChla",         #Chlorophyll a
 
 #IndList<-c("CoastOxygen") 
 
-AssessmentResults <- Assessment(df, nsim = nSimMC, IndList)
-cat(paste0("Time elapsed: ",Sys.time() - start_time))
+wblist<-distinct(df,WB,typology)
+wbcount<-nrow(wblist)
 
-resAvg <- AssessmentResults[[1]]
-resMC <- AssessmentResults[[2]]
-resErr <- AssessmentResults[[3]]
-resYear <- AssessmentResults[[4]]
+# Loop through distinct waterbodies and periods in the data
+bOVR<-TRUE
+bAPP<-FALSE
 
-cat("Saving results\n")
-save(AssessmentResults,file="output/AssessmentResults.Rda")
-save(df,file="output/AssessmentData.Rda")
+for(iWB in 1:wbcount){
+  
+  dfselect<-df %>% filter(WB == wblist$WB[iWB])
+  cat(paste0("WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")\n"))
+  
+  AssessmentResults <- Assessment(dfselect, nsim = nSimMC, IndList)
+  
+  cat(paste0("Time elapsed: ",Sys.time() - start_time,"\n"))
+  
+  resAvg <- AssessmentResults[[1]]
+  resMC <- AssessmentResults[[2]]
+  resErr <- AssessmentResults[[3]]
+  resYear <- AssessmentResults[[4]]
+  
+  #cat("Saving results\n")
+  #save(AssessmentResults,file="output/AssessmentResults.Rda")
+  #save(df,file="output/AssessmentData.Rda")
+  
+  #cat("Saving to db\n")
+  
+  WB <- resAvg %>% group_by(WB,Type,Period,Region,Typename) %>% summarise()
+  
+  db <- dbConnect(SQLite(), dbname="output/ekostat.db")
+  dbWriteTable(conn = db, name = "resAvg", resAvg, overwrite=bOVR,append=bAPP, row.names=FALSE)
+  dbWriteTable(conn = db, name = "resMC", resMC, overwrite=bOVR,append=bAPP, row.names=FALSE)
+  dbWriteTable(conn = db, name = "resErr", resErr, overwrite=bOVR,append=bAPP, row.names=FALSE)
+  dbWriteTable(conn = db, name = "resYear", resYear, overwrite=bOVR,append=bAPP, row.names=FALSE)
+  dbWriteTable(conn = db, name = "WB", WB, overwrite=bOVR,append=bAPP, row.names=FALSE)
+  dbWriteTable(conn = db, name = "data", dfselect, overwrite=bOVR,append=bAPP, row.names=FALSE)
+  
+  dbDisconnect(db)
 
-cat("Saving to db\n")
+  bOVR<-FALSE
+  bAPP<-TRUE
+  
 
-WB <- resAvg %>% group_by(WB,Type,Period,Region,Typename) %>% summarise()
-
-db <- dbConnect(SQLite(), dbname="output/ekostat.db")
-dbWriteTable(conn = db, name = "resAvg", resAvg, overwrite=T, row.names=FALSE)
-dbWriteTable(conn = db, name = "resMC", resMC, overwrite=T, row.names=FALSE)
-dbWriteTable(conn = db, name = "resErr", resErr, overwrite=T, row.names=FALSE)
-dbWriteTable(conn = db, name = "resYear", resYear, overwrite=T, row.names=FALSE)
-dbWriteTable(conn = db, name = "WB", WB, overwrite=T, row.names=FALSE)
-dbWriteTable(conn = db, name = "data", df, overwrite=T, row.names=FALSE)
-
-dbDisconnect(db)
-
+}
 
 
 #Problem data - to be analysed later. Removing these is just a quick fix!

@@ -145,26 +145,35 @@ OxygenTest2 <- function(df) {
   # Calculate test2 as average of O2 concentrations below the 25-percentile for Jan-May
   df2 <- O2bottom %>% mutate(month = lubridate::month(date),year = lubridate::year(date)) %>% filter(month %in% c(1,2,3,4,5))
   # Return from function if no observations available (Jan-May) for calculation of O2_test2
-  if (nrow(df2) == 0) {
-    yearmeans <- df %>% group_by(year) %>% summarise(xvar = NA)  # Return NA values in res
-    res <- list(periodmean=NA,yearmeans=yearmeans,error_code=-91)
-    return(res)
-  }
+  #browser()
+  # if (nrow(df2) == 0) {
+  #   yearmeans <- df %>% group_by(year) %>% summarise(xvar = NA)  # Return NA values in res
+  #   res <- list(periodmean=NA,yearmeans=yearmeans,error_code=-91)
+  #   return(res)
+  # }
+  #browser()
   O2_test2 <- mean(df2$O2bottom)
   O2_test2_yearmeans <- df2 %>% group_by(year) %>% summarise(O2bottom = mean(O2bottom))
   O2_test2_yearmeans <- left_join(years,O2_test2_yearmeans,c("year"))
   # Calculate indicator for percent area affected by <3.5 ml/l
   df2 <- O2bottom %>% mutate(month = lubridate::month(date),year = lubridate::year(date)) %>% filter(month %in% c(6,7,8,9,10,11,12))
+  #moved the test for nrow(df2) to after filtering by month!
+  if (nrow(df2) == 0) {
+     yearmeans <- df %>% group_by(year) %>% summarise(xvar = NA)  # Return NA values in res
+     res <- list(periodmean=NA,yearmeans=yearmeans,error_code=-91)
+     return(res)
+   }
   hyparea <- mean(df2$area_hyp)
   hyparea_yearmeans <- df2 %>% group_by(year) %>% summarise(area_hyp = mean(area_hyp))
   # Calculate EQR from Table 7.1 in Handbook
   EQR_test2 <- approx(BoundariesHypoxicArea,c(0,0.2,0.4,0.6,0.8,1),hyparea,yleft=0,yright=1)$y
   EQR_test2_yearmeans <- approx(BoundariesHypoxicArea,c(0,0.2,0.4,0.6,0.8,1),hyparea_yearmeans$area_hyp,yleft=0,yright=1)$y
   O2_test1<-ifelse(is.nan(O2_test1),0,O2_test1) # Set O2_test1 to zero if no data to complete the if-clause below
+  O2_test2<-ifelse(is.nan(O2_test2),0,O2_test2) # Set O2_test2 to zero if no data to complete the if-clause below
   if (O2_test1>3.5 || O2_test2>3.5) {
     res <- list(periodmean=EQR_test1,yearmeans=data.frame(year=O2_test1_yearmeans$year,xvar = EQR_test1_yearmeans),error_code=0)
   } else {
-    res <- list(periodmean=EQR_test2,yearmeans=data.frame(year=O2_test1_yearmeans$year,xvar = EQR_test2_yearmeans),error_code=0)
+    res <- list(periodmean=EQR_test2,yearmeans=data.frame(year=O2_test2_yearmeans$year,xvar = EQR_test2_yearmeans),error_code=0)
   }
   return(res)
 }

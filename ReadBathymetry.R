@@ -12,7 +12,8 @@ ReadBathymetry<-function(){
     mutate(area_pct=as.numeric(substr(area_pct,2,4))) %>%
     arrange(WB_name,area_pct) %>% 
     left_join(select(dfwb,WaterbodyID,WaterbodyName),by=c("WB_name"="WaterbodyID")) %>%
-    mutate(WB=paste0(WB_name," ",ifelse(is.na(WaterbodyName),"",WaterbodyName))) %>%
+    #mutate(WB=paste0(WB_name," ",ifelse(is.na(WaterbodyName),"",WaterbodyName))) %>%
+    mutate(WB=WB_name) %>%
     select(WB,area_pct,depth)
   return(df)
 }

@@ -16,13 +16,9 @@ Assessment <-
     df.bathy<-ReadBathymetry()
     df.indicators<-ReadIndicatorType()
     df.variances<-ReadVariances()
-
-    
-    
     
     df.all$typology<-gsub("SE_", "", df.all$typology)
-    # V_stationdate
-    
+
     df.months<- df.bounds %>% distinct(Indicator,Type,Months)
     
     wblist<-distinct(df.all,WB,typology)
@@ -32,18 +28,17 @@ Assessment <-
     # Loop through distinct waterbodies and periods in the data
 
     for(iWB in 1:wbcount){
-      cat(paste0("WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")\n"))
+      #cat(paste0("WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")\n"))
       df.temp<-df.all %>% filter(WB == wblist$WB[iWB])
       plist<-distinct(df.all,period)
       pcount<-nrow(plist)
       typology<-as.character(df.temp[1,"typology"])
       
-      cat(paste0("  Period: "))
       for(iPeriod in 1:pcount){
         
         df <- df.all %>% filter(WB == wblist$WB[iWB],period == plist$period[iPeriod])
         #cat(paste0("WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")  Period: ",plist$period[iPeriod],"\n"))
-        cat(paste0(plist$period[iPeriod]," "))
+        cat(paste0("  Period: ",plist$period[iPeriod]," \n"))
         
         # Get start and end years from the period text (e.g. "2001-2006")
         startyear<-as.numeric(substr(as.character(plist$period[iPeriod]),1,4))
@@ -55,7 +50,8 @@ Assessment <-
           IndSubtypes<-distinct(BoundsList,Depth_stratum)
           subcount<-nrow(IndSubtypes)
           dfsubs<-df
-          
+          #cat(paste0("Indicator: ",iInd," "))
+              
           for(iSub in 1:subcount){
             
             subtype<-IndSubtypes[iSub,1]
@@ -88,6 +84,7 @@ Assessment <-
             
             
             res<-IndicatorResults(df,typology,df.bounds,df.indicators,df.variances,iInd,startyear,endyear,nsim)
+            #cat(paste0("Indicator: ",iInd,"  res=",res$result_code,"\n"))
             if(res$result_code %in% c(0,-1)){
               
               #Period average results
@@ -172,7 +169,6 @@ Assessment <-
               df.temp$Type<-wblist$typology[iWB]
               df.temp$Period<-plist$period[iPeriod]
               df.temp$Code<-res$result_code
-              #cat(paste0("Indicator: ",iInd,"  Result: ",res$result_code,"\n"))
               
               if(exists("res.ind")){
                 res.ind<-bind_rows(res.ind,df.temp)
@@ -242,7 +238,7 @@ Assessment <-
           #incProgress(progfrac,detail=paste(wblist$WB[iWB],plist$period[iPeriod]))
         } #for(iInd in IndicatorList)
       }  #for(iPeriod in 1:pcount) 
-      cat(paste0(" Time elapsed: ",hms_span(start_time, Sys.time()) , "\n"))
+      #cat(paste0(" Time elapsed: ",hms_span(start_time, Sys.time()) , "\n"))
       
       #cat(paste0("\n"))
       }    #for(iWB in 1:wbcount)
@@ -267,12 +263,12 @@ Assessment <-
     
     #res.rnd$Value<-ifelse(res.rnd$UseEQR==1,(res.rnd$Estimate/res.rnd$Ref),res.rnd$Estimate)
     res.rnd<-GetClass(res.rnd)
-    cat(paste0("Sim results: ",nrow(res.rnd),"\n"))
+    #cat(paste0("Sim results: ",nrow(res.rnd),"\n"))
     
-    res.rnd <- res.rnd %>% left_join(select(df.indicators,Indicator,QualityElement,QualitySubelement,QEtype))
+    res.rnd <- res.rnd %>% left_join(select(df.indicators,Indicator,QualityElement,QualitySubelement,QEtype),
+                                     by=c("Indicator"))
     
     #Find counts for each category
-   
     res.rnd.count <- res.rnd %>% filter(!is.na(ClassID)) %>%
       group_by(WB,Period,Type,Indicator,IndSubtype,ClassID) %>% summarise(n=n())
     
@@ -282,17 +278,29 @@ Assessment <-
     ClassID<-c(1,2,3,4,5)
     ClassID<-data.frame(ClassID)
     ClassID$X<-1
-    res.rnd.count$X<-1
-    
-    res.rnd.count <- res.rnd.count %>% 
-      distinct(WB,Period,Type,Indicator,IndSubtype) %>% 
+    #if(nrow(res.rnd.count)==0){
+    #  browser()
+    #}
+    #res.rnd.count$X<-1
+      
+    res.rnd.distinct <- res.rnd %>% 
+      group_by(WB,Period,Type,Indicator,IndSubtype) %>% 
+      summarise() %>%
+      ungroup() %>%
       mutate(X=1) %>%
-      left_join(ClassID) %>%
-      left_join(res.rnd.count) %>%
+      left_join(ClassID,by=c("X")) %>%
       select(-X)
     
+    if(nrow(res.rnd.count)==0){
+      res.rnd.count <- res.rnd.distinct %>% mutate(n=NA)
+    }else{
+      res.rnd.count <- res.rnd.distinct %>%
+        left_join(res.rnd.count,by = c("WB", "Period", "Type", "Indicator", "IndSubtype", "ClassID"))
+    }
+    
     res.rnd.count$ClassID<-paste0("C",res.rnd.count$ClassID)
-    res.rnd.count$n<-res.rnd.count$n/nsim
+    res.rnd.count$n <- res.rnd.count$n/nsim
+    #browser()
     
     res.rnd.count<-spread(res.rnd.count, ClassID, n, fill = NA)
   
@@ -305,9 +313,9 @@ Assessment <-
     Categories<-c("Bad","Poor","Mod","Good","High","Ref")
     res.rnd$Class<-Categories[res.rnd$ClassID]
     
-    res.ind<-left_join(res.ind,res.rnd.count)
+    res.ind<-left_join(res.ind,res.rnd.count,by = c("WB", "Type", "Period", "Indicator", "IndSubtype"))
     
-    res.ind <- res.ind %>% left_join(select(df.indicators,Indicator,QualityElement,QualitySubelement,QEtype))
+    res.ind <- res.ind %>% left_join(select(df.indicators,Indicator,QualityElement,QualitySubelement,QEtype),by = "Indicator")
     
     names(res.ind)[names(res.ind)=="C1"]<-"fBad"
     names(res.ind)[names(res.ind)=="C2"]<-"fPoor"
@@ -322,8 +330,8 @@ Assessment <-
     Note<-data.frame(Code,Note,stringsAsFactors=FALSE)
   
     #Indicators
-    res[[1]] <-res.ind %>% left_join(Note)#%>% select(WB,Type,Period,QualityElement,QualitySubelement,Indicator,Mean,StdErr,EQR,Class,fBad,fPoor,fMod,fGood,fHigh )
-    res[[2]]<-res.rnd %>% left_join(Note)
+    res[[1]] <-res.ind %>% left_join(Note, by="Code")#%>% select(WB,Type,Period,QualityElement,QualitySubelement,Indicator,Mean,StdErr,EQR,Class,fBad,fPoor,fMod,fGood,fHigh )
+    res[[2]]<-res.rnd %>% left_join(Note, by="Code")
     if(!exists("res.err")){
       res.err<-data.frame(WB=NA,Type=NA,Period=NA,Indicator=NA,
                           IndSubtype=NA,Code=NA,Error=NA)
