@@ -1,3 +1,11 @@
-"WB_name"	"WaterbodyID"	"RefCond"	"H.G"	"G.M"	"M.P"	"P.B"	"Worst"
-"Byfjorden"	"SE582000-115270"	"100"	"68"	"64"	"60"	"40"	"0"
-"Gullmarn centralbassäng"	"SE581700-113000"	"100"	"82"	"53"	"24"	"16"	"0"
+WB_name	WaterbodyID	Worst	P.B	M.P	G.M	H.G	RefCond
+Byfjorden	SE582000-115270	100	68	64	60	40	0
+Gullmarn centralbassäng	SE581700-113000	100	82	53	24	16	0
+Kanholmsfjärden	SE592000-184700	100	75	48	21	14	0
+Skurusundet	SE591800-181360	100	50	48	45	30	0
+Askrikefjärden	SE592290-181600	100	67	35	3	2	0
+Laholmsbuktens kustvatten	SE563000-123351	100	93	55	16	11	0
+N Öresunds kustvatten	SE561030-122821	100	77	42	6	4	0
+N m Öresunds kustvatten	SE555545-124332	100	80	46	11	7	0
+Havstensfjorden	SE581740-114820	100	40	28	16	11	0
+Koljö fjord	SE581260-113220	100	33	27	20	14	0

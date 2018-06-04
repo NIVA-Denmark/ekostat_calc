@@ -66,7 +66,7 @@ Assessment <-
             # Indicator functions need to be modified so that thus information is sent as parameters in the function call!
             
             if (grepl("Oxygen",iInd,fixed=TRUE)) {
-              BoundariesHypoxicArea <<- df.bounds.hypox %>% filter(WB==wblist$WB[iWB]) %>% select(RefCond,H.G,G.M,M.P,P.B,Worst) %>% as.list()
+              BoundariesHypoxicArea <<- df.bounds.hypox %>% filter(WB==wblist$WB[iWB]) %>% select(Worst,P.B,M.P,G.M,H.G,RefCond) %>% as.list()
               WB_bathymetry <<- df.bathy %>% filter(WB==wblist$WB[iWB]) %>% select(area_pct,depth)
               if(!nrow(WB_bathymetry)>0){
                 #cat(paste0("No bathymetry information for ",wblist$WB[iWB],"\n"))
@@ -78,7 +78,7 @@ Assessment <-
               if(!nrow(df.bounds.hypox %>% filter(WB==wblist$WB[iWB]))>0){
                 #cat(paste0("No Hypoxic Area boundaries for ",wblist$WB[iWB],"\n"))
                 # the following line should be removed - it creates a false hypoxic area boundaries dataset  
-                BoundariesHypoxicArea <<- df.bounds.hypox %>% filter(WB=="SE582000-115270 Byfjorden") %>% select(RefCond,H.G,G.M,M.P,P.B,Worst) %>% as.list()
+                BoundariesHypoxicArea <<- df.bounds.hypox %>% filter(WB=="SE582000-115270") %>% select(Worst,P.B,M.P,G.M,H.G,RefCond) %>% as.list()
               }
             }
             

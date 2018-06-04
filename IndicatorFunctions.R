@@ -170,10 +170,14 @@ OxygenTest2 <- function(df) {
   EQR_test2_yearmeans <- approx(BoundariesHypoxicArea,c(0,0.2,0.4,0.6,0.8,1),hyparea_yearmeans$area_hyp,yleft=0,yright=1)$y
   O2_test1<-ifelse(is.nan(O2_test1),0,O2_test1) # Set O2_test1 to zero if no data to complete the if-clause below
   O2_test2<-ifelse(is.nan(O2_test2),0,O2_test2) # Set O2_test2 to zero if no data to complete the if-clause below
+  #browser()
   if (O2_test1>3.5 || O2_test2>3.5) {
     res <- list(periodmean=EQR_test1,yearmeans=data.frame(year=O2_test1_yearmeans$year,xvar = EQR_test1_yearmeans),error_code=0)
   } else {
-    res <- list(periodmean=EQR_test2,yearmeans=data.frame(year=O2_test2_yearmeans$year,xvar = EQR_test2_yearmeans),error_code=0)
+    # if(length(O2_test2_yearmeans$year)!=length(EQR_test2_yearmeans)){
+    #   browser()
+    # }
+    res <- list(periodmean=EQR_test2,yearmeans=data.frame(year=O2_test1_yearmeans$year,xvar = EQR_test2_yearmeans),error_code=0)
   }
   return(res)
 }

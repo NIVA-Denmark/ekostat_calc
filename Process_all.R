@@ -8,7 +8,6 @@ rm(list = ls())
 library(RSQLite)
 library(dplyr)
 library(tidyr)
-#library(haven)
 library(lubridate)
 library(prodlim)
 library(matrixStats)
@@ -23,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 2 #20 #1000  #number of Monte Carlo simulations
+nSimMC <- 100 #20 #1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 
@@ -53,6 +52,9 @@ df[df$WB_ID=="SE634210-202020", "DistrictID"] <- "SE1" #Holmsund*
 df[df$WB_ID=="SE634210-202020", "type"] <- "22"        #Holmsund*
 # *In VISS, I can only find vatttendrag with this name but it is SE1 and Luleå kommun
 
+df[df$WB_ID=="SE575500-113750", "type"] <- "01n"        #Älgöfjorden
+df[df$WB_ID=="SE583730-164501", "type"] <- "12n"        #Yttre Bråviken
+
 #Fix records with missing type, using other records for the same waterbody
 df <- df %>% 
   mutate(type=ifelse(substr(type,1,1)=="0",substr(type,2,4),type))  
@@ -70,14 +72,21 @@ df <- df %>% select(DistrictID,typology=type,station,WB_name,WB_ID,institution,s
 #df$WB <- paste0(df$WB_ID, " ", df$WB_name)
 df$WB <- df$WB_ID
 df$obspoint <- df$station
-#df<-df %>% filter(WB=="SE564250-162500")
 
+#df<-df %>% filter(WB=="SE644730-210650")
+#df<-df %>% filter(WB=="SE582705-163350")
+#df<-df %>% filter(WB %in% c("SE581700-113000","SE582000-115270"))
 df <- df %>% mutate(year=year(date),month=month(date)) %>% 
   mutate(period=ifelse(year<2004,NA,ifelse(year<2010,"2004-2009",ifelse(year<2016,"2010-2015","2016-2021"))))
 df <- df %>% filter(!is.na(period))
 
+#Problem O2 data - to be analysed later. Removing these is just a quick fix!
+df$O2<-ifelse(df$WB=="SE644730-210650" & 
+                df$period=="2010-2015",NA,df$O2)
 
-IndList<-c("CoastChla",         #Chlorophyll a
+
+IndList<-c("CoastOxygen",       #Dissolved Oxygen (O2) 
+           "CoastChla",         #Chlorophyll a
            "CoastChlaEQR",      #Chlorophyll a (EQR),
            "CoastBiovol",         #Phytoplankton biovolume
            "CoastBiovolEQR",      #Phytoplankton biovolume (EQR)
@@ -90,8 +99,8 @@ IndList<-c("CoastChla",         #Chlorophyll a
            "CoastTNwinter",     #Winter TN
            "CoastDIPwinter",    #Winter DIP 
            "CoastTPsummer",     #Summer TP
-           "CoastTPwinter",     #Winter TP
-           "CoastOxygen")       #Dissolved Oxygen (O2) 
+           "CoastTPwinter"     #Winter TP
+           )       
 
 # IndList<-c("CoastChlaEQR","CoastBiovolEQR",
 #            "CoastTNsummer","CoastTNsummerEQR",
@@ -148,55 +157,4 @@ for(iWB in 1:wbcount){
 
 }
 
-
-#Problem data - to be analysed later. Removing these is just a quick fix!
-if(FALSE){
-  df$O2<-ifelse(df$WB=="SE574450-165451 Västerviks kustvatten" & 
-                  df$period=="2007-2012",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE560205-143545 Sölvesborgsviken",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE560790-145850 Tärnöfjärden sek namn",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE560825-144215 Inre Pukaviksbukten",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE561000-153320 Danmarksfjärden",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE561005-150250 Tjäröfjärden",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE562450-122751 Skäldervikens kustvatten",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE563000-123351 Laholmsbuktens kustvatten",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE571000-184001 Ö Gotlands s kustvatten",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE591200-183600 Nämdöfjärden",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE591300-182800 Ingaröfjärden",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE591800-181360 Skurusundet",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE592000-184700 Kanholmsfjärden",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE592245-184400 Sollenkrokafjärden",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE592420-182210 Södra Vaxholmsfjärden",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE625710-183000 Omnefjärden",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE631610-184500 Örnsköldsviksfjärden",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE631840-191130 Husumbukten",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE659024-162417 Edsviken",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE554810-125240 Lundåkrabukten" & 
-                  df$period=="2013-2017",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE552500-124461 S Öresunds kustvatten",NA,df$O2)
-  df$O2<-ifelse(df$WB=="SE554040-125750 Lommabukten",NA,df$O2)
-
-
-# ---------- -----------------------------
-#df<-df %>% filter(DistrictID=="SE5")
-
-#df<-df %>% filter(!is.na(O2))
-
-
-#df <- test %>% left_join(df,by=c("WB"="WB"))
-
-#df<-df %>% filter(WB=="SE554800-142001 V Hanöbuktens kustvatten")
-#df<-df %>% filter(WB=="SE575340-113000 Marstrandsfjorden")
-#df<-df %>% filter(!is.na(O2))
-
-test<-df %>% filter(WB=="SE591800-181360 Skurusundet" & !is.na(O2))
-# Oxygen indicator - first version
-RefCond_sali <- c(56,50,44,38,32,26,20,rep(17,29))
-variance_list <- list(V_station=0.5,V_obspoint=0,
-                      V_year=1.5,V_yearmonth=1.4,
-                      V_stationyear=0.4,V_stationmonth=0.1,V_stationdate=1.0,
-                      V_institution=0.0,V_replication=0)
-MonthInclude <- c(1,2,3,4,5,6,7,8,9,10,11,12)
-AssessmentResults <- CalculateIndicator("CoastOxygen",test,RefCond_sali,variance_list,MonthInclude,2007,2012,n_iter=10)
-}
 
