@@ -30,6 +30,7 @@ Assessment <-
     progfrac= 1/(wbcount*3*length(IndicatorList))
     
     # Loop through distinct waterbodies and periods in the data
+
     for(iWB in 1:wbcount){
       cat(paste0("WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")\n"))
       df.temp<-df.all %>% filter(WB == wblist$WB[iWB])
@@ -58,8 +59,10 @@ Assessment <-
           for(iSub in 1:subcount){
             
             subtype<-IndSubtypes[iSub,1]
-            if(subtype!=""){
-              df<-FilterDepth(dfsubs,subtype)
+            if(!is.na(subtype)){
+              if(subtype!=""){
+                df<-FilterDepth(dfsubs,subtype)
+              }
             }
             
             # The oxygen indicator refers to two global dataframes: WB_bathymetry and BoundariesHypoxicArea
@@ -86,6 +89,8 @@ Assessment <-
             
             res<-IndicatorResults(df,typology,df.bounds,df.indicators,df.variances,iInd,startyear,endyear,nsim)
             if(res$result_code %in% c(0,-1)){
+              
+              #Period average results
               rm(df.temp)
               df.temp<-data.frame(Mean=res$period$mean,StdErr=res$period$stderr,Code=res$result_code)
               df.temp$Indicator<-iInd
@@ -101,7 +106,25 @@ Assessment <-
               }else{
                 res.ind<-df.temp
               }
+
+              #Year average results
+              rm(df.temp)
               
+              df.temp<-data.frame(Year=res$annual$year,Mean=res$annual$mean,StdErr=res$annual$stderr)
+              df.temp$Indicator<-iInd
+              df.temp$IndSubtype<-subtype
+              df.temp$WB<-wblist$WB[iWB]
+              df.temp$Type<-wblist$typology[iWB]
+              df.temp$Period<-plist$period[iPeriod]
+              df.temp$Code<-res$result_code
+              #browser()
+              if(exists("res.year")){
+                res.year<-bind_rows(res.year,df.temp)
+              }else{
+                res.year<-df.temp
+              }
+              
+              #Monte Carlo results
               rm(df.temp)
               df.temp<-data.frame(Estimate=res$indicator_sim,Code=res$result_code)
               df.temp$Indicator<-iInd
@@ -156,6 +179,30 @@ Assessment <-
               }else{
                 res.ind<-df.temp
               }
+              #Year average results
+              rm(df.temp)
+              
+              ps<-plist$period[iPeriod]
+              y1<-as.numeric(substr(ps,1,4))
+              y2<-as.numeric(substr(ps,6,9))
+              years<-seq(y1,y2,1)
+              
+              df.temp<-data.frame(Year=years)
+              df.temp$Mean<-NA
+              df.temp$StdErr<-NA
+              df.temp$Indicator<-iInd
+              df.temp$IndSubtype<-subtype
+              df.temp$WB<-wblist$WB[iWB]
+              df.temp$Type<-wblist$typology[iWB]
+              df.temp$Period<-plist$period[iPeriod]
+              df.temp$Code<-res$result_code
+              
+              if(exists("res.year")){
+                res.year<-bind_rows(res.year,df.temp)
+              }else{
+                res.year<-df.temp
+              }
+              
               
               df.temp<-data.frame(WB=wblist$WB[iWB],
                                   Type=wblist$typology[iWB],
@@ -282,6 +329,7 @@ Assessment <-
                           IndSubtype=NA,Code=NA,Error=NA)
     }
     res[[3]]<-res.err
+    res[[4]]<-res.year
     
     return(res)
     
@@ -404,6 +452,7 @@ IndicatorResults<-function(df,typology,df.bounds,df.indicators,df.variances,indi
   df.months<- df.bounds %>% distinct(Indicator,Type,Months)
   RefCond_sali<-SalinityReferenceValues(df.bounds,typology,indicator,missing)
   MonthInclude <- IndicatorMonths(df.months,typology,indicator)
+  
   variance_list<- VarianceComponents(df.indicators,df.variances,typology,indicator)
   #cat(paste0(indicator,"\n"))
   

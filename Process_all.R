@@ -6,8 +6,9 @@
 rm(list = ls())
 
 library(RSQLite)
-library(tidyverse)
-library(haven)
+library(dplyr)
+library(tidyr)
+#library(haven)
 library(lubridate)
 library(prodlim)
 library(matrixStats)
@@ -24,13 +25,7 @@ source("ReadVariances.R")
 start_time <- Sys.time()
 nSimMC <- 1000 #20 #1  #number of Monte Carlo simulations
 
-df_water<-read_sas("data/coast_watersamples.sas7bdat") #19824
-df_o2<-read_sas("data/coast_oxygen.sas7bdat")          #94747
-df_bqi<-read_sas("data/coast_bqi.sas7bdat")            # 7142
-df_msmdi<-read_sas("data/coast_msmdi.sas7bdat")        # 1089
-
-df <- bind_rows(df_water,df_o2,df_bqi,df_msmdi)
-df <- df %>% mutate(WB_ID=paste0("SE",WB_ID))
+load("data/SASdata.Rda")
 
 #Read waterbody data
 df_wb <- read.table("data/waterbodies.txt",fileEncoding = "UTF-8",
@@ -77,35 +72,33 @@ df <- df %>%
 
 
 df <- df %>% mutate(year=year(date),month=month(date)) %>% 
-  mutate(period=ifelse(year<2001,NA,ifelse(year<2007,"2001-2006",ifelse(year<2013,"2007-2012","2013-2017"))))
+  mutate(period=ifelse(year<2004,NA,ifelse(year<2010,"2004-2009",ifelse(year<2016,"2010-2015","2016-2021"))))
+df <- df %>% filter(!is.na(period))
+
 
 IndList<-c("CoastChla",         #Chlorophyll a
-           "CoastChlaEQR",      #Chlorophyll a (EQR)
-           "CoastTNsummer",     #Summer TN
-           "CoastTNsummerEQR",  #Summer TN (EQR)
-           "CoastTNwinter",     #Winter TN
-           "CoastTNwinterEQR",  #Winter TN (EQR)
-           "CoastTPsummer",     #Summer TP
-           "CoastTPsummerEQR",  #Summer TP (EQR)
-           "CoastTPwinter",     #Winter TP
-           "CoastTPwinterEQR",  #Winter TP (EQR)
-           "CoastDINsummer",    #Summer DIN 
-           "CoastDINsummerEQR", #Summer DIN (EQR) 
-           "CoastDIPsummer",    #Summer DIP 
-           "CoastDIPsummerEQR", #Summer DIP (EQR) 
+           "CoastChlaEQR",      #Chlorophyll a (EQR),
+           "CoastBiovol",         #Phytoplankton biovolume
+           "CoastBiovolEQR",      #Phytoplankton biovolume (EQR)
+           "CoastMSMDI",        #Multi Species Maximum Depth Index (MSMDI) 
+           "CoastBQI",          #Benthic Quality Index (BQI) 
            "CoastSecchi",       #Secchi Depth 
            "CoastSecchiEQR",    #Secchi Depth (EQR) 
-           "CoastBQI",          #Benthic Quality Index (BQI) 
-           "CoastMSMDI",        #Multi Species Maximum Depth Index (MSMDI) 
+           "CoastDINwinter",    #Winter DIN 
+           "CoastTNsummer",     #Summer TN
+           "CoastTNwinter",     #Winter TN
+           "CoastDIPwinter",    #Winter DIP 
+           "CoastTPsummer",     #Summer TP
+           "CoastTPwinter",     #Winter TP
            "CoastOxygen")       #Dissolved Oxygen (O2) 
 
-IndList<-c("CoastChla","CoastChlaEQR",
-           "CoastTNsummer","CoastTNsummerEQR",
-           "CoastTNwinter","CoastTNwinterEQR",
-           "CoastTPsummer","CoastTPsummerEQR",
-           "CoastTPwinter","CoastTPwinterEQR",
-           "CoastSecchi","CoastSecchiEQR",
-           "CoastBQI","CoastMSMDI","CoastOxygen") 
+# IndList<-c("CoastChlaEQR","CoastBiovolEQR",
+#            "CoastTNsummer","CoastTNsummerEQR",
+#            "CoastTNwinter","CoastTNwinterEQR",
+#            "CoastTPsummer","CoastTPsummerEQR",
+#            "CoastTPwinter","CoastTPwinterEQR",
+#            "CoastSecchi","CoastSecchiEQR",
+#            "CoastBQI","CoastMSMDI","CoastOxygen") 
 
 #IndList<-c("CoastOxygen") 
 
@@ -115,6 +108,7 @@ cat(paste0("Time elapsed: ",Sys.time() - start_time))
 resAvg <- AssessmentResults[[1]]
 resMC <- AssessmentResults[[2]]
 resErr <- AssessmentResults[[3]]
+resYear <- AssessmentResults[[4]]
 
 cat("Saving results\n")
 save(AssessmentResults,file="output/AssessmentResults.Rda")
@@ -128,6 +122,7 @@ db <- dbConnect(SQLite(), dbname="output/ekostat.db")
 dbWriteTable(conn = db, name = "resAvg", resAvg, overwrite=T, row.names=FALSE)
 dbWriteTable(conn = db, name = "resMC", resMC, overwrite=T, row.names=FALSE)
 dbWriteTable(conn = db, name = "resErr", resErr, overwrite=T, row.names=FALSE)
+dbWriteTable(conn = db, name = "resYear", resYear, overwrite=T, row.names=FALSE)
 dbWriteTable(conn = db, name = "WB", WB, overwrite=T, row.names=FALSE)
 dbWriteTable(conn = db, name = "data", df, overwrite=T, row.names=FALSE)
 
@@ -161,7 +156,7 @@ if(FALSE){
                   df$period=="2013-2017",NA,df$O2)
   df$O2<-ifelse(df$WB=="SE552500-124461 S Öresunds kustvatten",NA,df$O2)
   df$O2<-ifelse(df$WB=="SE554040-125750 Lommabukten",NA,df$O2)
-}
+
 
 # ---------- -----------------------------
 #df<-df %>% filter(DistrictID=="SE5")
@@ -184,5 +179,5 @@ variance_list <- list(V_station=0.5,V_obspoint=0,
                       V_institution=0.0,V_replication=0)
 MonthInclude <- c(1,2,3,4,5,6,7,8,9,10,11,12)
 AssessmentResults <- CalculateIndicator("CoastOxygen",test,RefCond_sali,variance_list,MonthInclude,2007,2012,n_iter=10)
-
+}
 

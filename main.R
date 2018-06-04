@@ -17,7 +17,7 @@ rm(list = ls())
 source("ReadMonitoringData.R")
 source("ReadIndicatorParms.R")
 #source("CalculateIndicator.R")
-source("CalculateIndicatorSupport.R")
+
 source("IndicatorFunctions.R")
 
 # Read data set for specific waterbody and period
@@ -77,8 +77,8 @@ variance_list <- list(V_station=0.5,V_obspoint=0,
                       V_year=1.5,V_yearmonth=1.4,
                       V_stationyear=0.4,V_stationmonth=0.1,V_stationdate=1.0,
                       V_institution=0.0,V_replication=0)
-df <- ReadMonitoringDataSMHI("data/GullmarnO2x_2007_2012.sas7bdat")
-df <- ReadMonitoringDataSMHI("data/ByfjordenO2x_2007_2012.sas7bdat")
+df <- ReadMonitoringDataSMHI("data/GullmarnO2_2007_2012.sas7bdat")
+df <- ReadMonitoringDataSMHI("data/ByfjordenO2_2007_2012.sas7bdat")
 MonthInclude <- c(1,2,3,4,5,6,7,8,9,10,11,12)
 CalculateIndicator("CoastOxygen",df,RefCond_sali,variance_list,MonthInclude,2007,2012,n_iter=10)
 
@@ -88,7 +88,7 @@ df <- ReadMonitoringDataSMHI("data/ByfjordenO2x_2007_2012.sas7bdat")
 WB_bathymetry <- data.frame(area_pct = 1:100, depth = c(1:40/4,10+1:20/2,20+1:30/3,30+1:10))
 BoundariesHypoxicArea <- c(100,68,64,60,40,0)
 df <- mutate(df,xvar=O2)
-CalculateIndicator("CoastOxygen",df,RefCond_sali,variance_list,MonthInclude,2007,2012)
+CalculateIndicator("CoastOxygen",filter(df,year>2009),RefCond_sali,variance_list,MonthInclude,2007,2012)
 df <- ReadMonitoringDataSMHI("data/GullmarnO2x_2007_2012.sas7bdat")
 WB_bathymetry <- data.frame(area_pct = 1:100, depth = c(1:40*2,80+1:20,100+1:30,130+1:10))
 BoundariesHypoxicArea <- c(100,82,53,24,16,0)
