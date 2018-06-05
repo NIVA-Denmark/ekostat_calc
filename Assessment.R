@@ -391,7 +391,7 @@ GetClass<-function(df){
   df$EQR<-ifelse(df$ClassID>5,1,df$EQR)
   #Class cannot be better than "High":
   df$ClassID<-ifelse(df$ClassID>5,5,df$ClassID)
-  df$Class<-Categories[df$ClassID]
+  df$Class<-ifelse(is.na(df$ClassID),NA,Categories[df$ClassID])
   df<-select(df,-c(Resp,class1,class2,class3,class4,class5,Bnd1,Bnd2))
   return(df)
 }
