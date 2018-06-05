@@ -85,6 +85,7 @@ Assessment <-
             
             res<-IndicatorResults(df,typology,df.bounds,df.indicators,df.variances,iInd,startyear,endyear,nsim)
             #cat(paste0("Indicator: ",iInd,"  res=",res$result_code,"\n"))
+            #browser()
             if(res$result_code %in% c(0,-1)){
               
               #Period average results

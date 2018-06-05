@@ -22,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 100 #20 #1000  #number of Monte Carlo simulations
+nSimMC <- 200 #20 #1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 
@@ -76,6 +76,8 @@ df$obspoint <- df$station
 #df<-df %>% filter(WB=="SE644730-210650")
 #df<-df %>% filter(WB=="SE582705-163350")
 #df<-df %>% filter(WB %in% c("SE581700-113000","SE582000-115270"))
+#df<-df %>% filter(WB=="SE554500-125001")
+
 df <- df %>% mutate(year=year(date),month=month(date)) %>% 
   mutate(period=ifelse(year<2004,NA,ifelse(year<2010,"2004-2009",ifelse(year<2016,"2010-2015","2016-2021"))))
 df <- df %>% filter(!is.na(period))
@@ -85,32 +87,35 @@ df$O2<-ifelse(df$WB=="SE644730-210650" &
                 df$period=="2010-2015",NA,df$O2)
 
 
-IndList<-c("CoastOxygen",       #Dissolved Oxygen (O2) 
-           "CoastChla",         #Chlorophyll a
-           "CoastChlaEQR",      #Chlorophyll a (EQR),
-           "CoastBiovol",         #Phytoplankton biovolume
-           "CoastBiovolEQR",      #Phytoplankton biovolume (EQR)
-           "CoastMSMDI",        #Multi Species Maximum Depth Index (MSMDI) 
-           "CoastBQI",          #Benthic Quality Index (BQI) 
-           "CoastSecchi",       #Secchi Depth 
-           "CoastSecchiEQR",    #Secchi Depth (EQR) 
-           "CoastDINwinter",    #Winter DIN 
-           "CoastTNsummer",     #Summer TN
-           "CoastTNwinter",     #Winter TN
-           "CoastDIPwinter",    #Winter DIP 
-           "CoastTPsummer",     #Summer TP
-           "CoastTPwinter"     #Winter TP
-           )       
+IndListAll<-c("CoastOxygen",    #1 Dissolved Oxygen (O2) 
+           "CoastSecchi",       #2 Secchi Depth 
+           "CoastSecchiEQR",    #3 Secchi Depth (EQR) 
+           "CoastDINwinter",    #4 Winter DIN 
+           "CoastDINwinterEQR", #5 Winter DIN (EQR)
+           "CoastTNsummer",     #6 Summer TN
+           "CoastTNsummerEQR",  #7 Summer TN (EQR)
+           "CoastTNwinter",     #8 Winter TN
+           "CoastTNwinterEQR",  #9 Winter TN (EQR)
+           "CoastDIPwinter",    #10 Winter DIP 
+           "CoastDIPwinterEQR", #11 Winter DIP (EQR)
+           "CoastTPsummer",     #12 Summer TP
+           "CoastTPsummerEQR",  #13 Summer TP (EQR)
+           "CoastTPwinter",     #14 Winter TP
+           "CoastTPwinterEQR",  #15 Winter TP (EQR)
+           "CoastMSMDI",        #16 Multi Species Maximum Depth Index (MSMDI) 
+           "CoastBQI",          #17 Benthic Quality Index (BQI) 
+           "CoastChla",         #18 Chlorophyll a
+           "CoastChlaEQR",      #19 Chlorophyll a (EQR),
+           "CoastBiovol",       #20 Phytoplankton biovolume
+           "CoastBiovolEQR"     #21 Phytoplankton biovolume (EQR)
+)  
+#IndList<-IndListAll[2:15]
+#IndList<-IndListAll[16:17]
+IndList<-IndListAll[18:21]
 
-# IndList<-c("CoastChlaEQR","CoastBiovolEQR",
-#            "CoastTNsummer","CoastTNsummerEQR",
-#            "CoastTNwinter","CoastTNwinterEQR",
-#            "CoastTPsummer","CoastTPsummerEQR",
-#            "CoastTPwinter","CoastTPwinterEQR",
-#            "CoastSecchi","CoastSecchiEQR",
-#            "CoastBQI","CoastMSMDI","CoastOxygen") 
 
 #IndList<-c("CoastOxygen") 
+#IndList<-c("CoastChlaEQR","CoastBiovolEQR","CoastDINwinter") 
 
 wblist<-distinct(df,WB,typology)
 wbcount<-nrow(wblist)
@@ -141,7 +146,7 @@ for(iWB in 1:wbcount){
   
   WB <- resAvg %>% group_by(WB,Type,Period,Region,Typename) %>% summarise()
   
-  db <- dbConnect(SQLite(), dbname="output/ekostat.db")
+  db <- dbConnect(SQLite(), dbname="output/ekostat3.db")
   dbWriteTable(conn = db, name = "resAvg", resAvg, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resMC", resMC, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resErr", resErr, overwrite=bOVR,append=bAPP, row.names=FALSE)
