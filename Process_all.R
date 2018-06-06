@@ -111,7 +111,8 @@ IndListAll<-c("CoastOxygen",    #1 Dissolved Oxygen (O2)
 )  
 #IndList<-IndListAll[2:15]
 #IndList<-IndListAll[16:17]
-IndList<-IndListAll[18:21]
+#IndList<-IndListAll[18:21]
+IndList<-IndListAll[2:3]
 
 
 #IndList<-c("CoastOxygen") 
@@ -146,7 +147,7 @@ for(iWB in 1:wbcount){
   
   WB <- resAvg %>% group_by(WB,Type,Period,Region,Typename) %>% summarise()
   
-  db <- dbConnect(SQLite(), dbname="output/ekostat3.db")
+  db <- dbConnect(SQLite(), dbname="output/ekostatSecchi.db")
   dbWriteTable(conn = db, name = "resAvg", resAvg, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resMC", resMC, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resErr", resErr, overwrite=bOVR,append=bAPP, row.names=FALSE)
