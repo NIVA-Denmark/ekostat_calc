@@ -107,33 +107,33 @@ Coastal	MSMDI	No unit	logit_w_replace	Bottenviken	20	Norra Kvarkens inre kustvat
 Coastal	MSMDI	No unit	logit_w_replace	Bottenviken	21	Norra Kvarkens yttre kustvatten	0.666109203	#N/A	0.004840127	#N/A	#N/A	#N/A	0.765558538	0	#N/A	#N/A	#N/A	0.011334985
 Coastal	MSMDI	No unit	logit_w_replace	Bottenviken	22	Bottenviken, inre kustvatten	0.666109203	#N/A	0.004840127	#N/A	#N/A	#N/A	0.765558538	0	#N/A	#N/A	#N/A	0.004602924
 Coastal	MSMDI	No unit	logit_w_replace	Bottenviken	23	Bottenviken, yttre kustvatten	0.666109203	#N/A	0.004840127	#N/A	#N/A	#N/A	0.765558538	0	#N/A	#N/A	#N/A	0.011334985
-Coastal	Secchi depth	m	log	Västerhavet	1n	Västkustens inre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	1.928790324
-Coastal	Secchi depth	m	log	Västerhavet	1s	Västkustens inre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	1.928790324
-Coastal	Secchi depth	m	log	Västerhavet	2	Västkustens fjordar	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	1.275841342
-Coastal	Secchi depth	m	log	Västerhavet	3	Skagerak, Västkustens yttre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	0.580825334
-Coastal	Secchi depth	m	log	Västerhavet	25	Göta Älvs- och Nordre Älvs estuarie	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	1.275841342
-Coastal	Secchi depth	m	log	Västerhavet	4	Kattegat, Västkustens yttre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	0.580825334
-Coastal	Secchi depth	m	log	Västerhavet	5	Södra Hallands och norra Öresunds kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	0.520231564
-Coastal	Secchi depth	m	log	Västerhavet	6	Öresunds kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	2.16621258
-Coastal	Secchi depth	m	log	Egentliga Östersjön	7	Skånes kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	2.945550736
-Coastal	Secchi depth	m	log	Egentliga Östersjön	8	Blekinge skärgårds och Kalmarsunds inre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	3.056960093
-Coastal	Secchi depth	m	log	Egentliga Östersjön	9	Blekinge skärgård, och Kalmarsunds yttre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	2.689885657
-Coastal	Secchi depth	m	log	Egentliga Östersjön	10	Östra Ölands, sydöstra Gotlands kustvatten samt Gotska sandön	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	2.689885657
-Coastal	Secchi depth	m	log	Egentliga Östersjön	11	Gotlands västra och norra kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	2.689885657
-Coastal	Secchi depth	m	log	Egentliga Östersjön	12n	Östergötlands samt Stockholms skärgård, mellankustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	2.053421386
-Coastal	Secchi depth	m	log	Egentliga Östersjön	12s	Östergötlands samt Stockholms skärgård, mellankustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	1.880230233
-Coastal	Secchi depth	m	log	Egentliga Östersjön	13	Östergötlands inre skärgård	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	0.84475671
-Coastal	Secchi depth	m	log	Egentliga Östersjön	14	Östergötlands, yttre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	2.689885657
-Coastal	Secchi depth	m	log	Egentliga Östersjön	15	Stockholms skärgård, yttre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	2.689885657
-Coastal	Secchi depth	m	log	Egentliga Östersjön	24	Stockholms inre skärgård og Hallsfjärden	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	0.364571348
-Coastal	Secchi depth	m	log	Bottenhavet	16	Södra Bottenhavet, inre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	1.643640101
-Coastal	Secchi depth	m	log	Bottenhavet	17	Södra Bottenhavet, yttre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	3.027926986
-Coastal	Secchi depth	m	log	Bottenhavet	18	Norra Bottenhavet, Höga kustens inre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	1.668820903
-Coastal	Secchi depth	m	log	Bottenhavet	19	Norra Bottenhavet, Höga kustens yttre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	3.027926986
-Coastal	Secchi depth	m	log	Bottenviken	20	Norra Kvarkens inre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	2.908001644
-Coastal	Secchi depth	m	log	Bottenviken	21	Norra Kvarkens yttre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	3.027926986
-Coastal	Secchi depth	m	log	Bottenviken	22	Bottenviken, inre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	1.881613646
-Coastal	Secchi depth	m	log	Bottenviken	23	Bottenviken, yttre kustvatten	0.64477407	#N/A	0.138228818	0.559955516	#N/A	#N/A	0.916818871	0	0.157381462	0.245412977	#N/A	3.027926986
+Coastal	Secchi depth	m	log	Västerhavet	1n	Västkustens inre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	1.928790324
+Coastal	Secchi depth	m	log	Västerhavet	1s	Västkustens inre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	1.928790324
+Coastal	Secchi depth	m	log	Västerhavet	2	Västkustens fjordar	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	1.275841342
+Coastal	Secchi depth	m	log	Västerhavet	3	Skagerak, Västkustens yttre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	0.580825334
+Coastal	Secchi depth	m	log	Västerhavet	25	Göta Älvs- och Nordre Älvs estuarie	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	1.275841342
+Coastal	Secchi depth	m	log	Västerhavet	4	Kattegat, Västkustens yttre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	0.580825334
+Coastal	Secchi depth	m	log	Västerhavet	5	Södra Hallands och norra Öresunds kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	0.520231564
+Coastal	Secchi depth	m	log	Västerhavet	6	Öresunds kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	2.16621258
+Coastal	Secchi depth	m	log	Egentliga Östersjön	7	Skånes kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	2.945550736
+Coastal	Secchi depth	m	log	Egentliga Östersjön	8	Blekinge skärgårds och Kalmarsunds inre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	3.056960093
+Coastal	Secchi depth	m	log	Egentliga Östersjön	9	Blekinge skärgård, och Kalmarsunds yttre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	2.689885657
+Coastal	Secchi depth	m	log	Egentliga Östersjön	10	Östra Ölands, sydöstra Gotlands kustvatten samt Gotska sandön	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	2.689885657
+Coastal	Secchi depth	m	log	Egentliga Östersjön	11	Gotlands västra och norra kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	2.689885657
+Coastal	Secchi depth	m	log	Egentliga Östersjön	12n	Östergötlands samt Stockholms skärgård, mellankustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	2.053421386
+Coastal	Secchi depth	m	log	Egentliga Östersjön	12s	Östergötlands samt Stockholms skärgård, mellankustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	1.880230233
+Coastal	Secchi depth	m	log	Egentliga Östersjön	13	Östergötlands inre skärgård	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	0.84475671
+Coastal	Secchi depth	m	log	Egentliga Östersjön	14	Östergötlands, yttre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	2.689885657
+Coastal	Secchi depth	m	log	Egentliga Östersjön	15	Stockholms skärgård, yttre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	2.689885657
+Coastal	Secchi depth	m	log	Egentliga Östersjön	24	Stockholms inre skärgård og Hallsfjärden	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	0.364571348
+Coastal	Secchi depth	m	log	Bottenhavet	16	Södra Bottenhavet, inre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	1.643640101
+Coastal	Secchi depth	m	log	Bottenhavet	17	Södra Bottenhavet, yttre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	3.027926986
+Coastal	Secchi depth	m	log	Bottenhavet	18	Norra Bottenhavet, Höga kustens inre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	1.668820903
+Coastal	Secchi depth	m	log	Bottenhavet	19	Norra Bottenhavet, Höga kustens yttre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	3.027926986
+Coastal	Secchi depth	m	log	Bottenviken	20	Norra Kvarkens inre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	2.908001644
+Coastal	Secchi depth	m	log	Bottenviken	21	Norra Kvarkens yttre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	3.027926986
+Coastal	Secchi depth	m	log	Bottenviken	22	Bottenviken, inre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	1.881613646
+Coastal	Secchi depth	m	log	Bottenviken	23	Bottenviken, yttre kustvatten	0.070284796	#N/A	0.014517385	0.023432463	#N/A	#N/A	0.049800559	0	0.00656177	0.009706824	#N/A	3.027926986
 Coastal	Dissolved Inorganic Nitrogen	µmol/l	log	Västerhavet	1n	Västkustens inre kustvatten	0.015036785	#N/A	0.003478531	0.035243476	#N/A	#N/A	0.303055109	0	0.090368026	0.030039557	#N/A	37.70179173
 Coastal	Dissolved Inorganic Nitrogen	µmol/l	log	Västerhavet	1s	Västkustens inre kustvatten	0.015036785	#N/A	0.003478531	0.035243476	#N/A	#N/A	0.303055109	0	0.090368026	0.030039557	#N/A	37.70179173
 Coastal	Dissolved Inorganic Nitrogen	µmol/l	log	Västerhavet	2	Västkustens fjordar	0.015036785	#N/A	0.003478531	0.035243476	#N/A	#N/A	0.303055109	0	0.090368026	0.030039557	#N/A	35.09744211
