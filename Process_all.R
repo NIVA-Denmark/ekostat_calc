@@ -22,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 200 #20 #1000  #number of Monte Carlo simulations
+nSimMC <- 10 #200 #20 #1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 
@@ -87,6 +87,9 @@ df$O2<-ifelse(df$WB=="SE644730-210650" &
                 df$period=="2010-2015",NA,df$O2)
 
 
+df <- df %>% filter(!WB_ID %in% c("SE563000-123351","SE582705-163350","SE583000-165600"))
+
+
 IndListAll<-c("CoastOxygen",    #1 Dissolved Oxygen (O2) 
            "CoastSecchi",       #2 Secchi Depth 
            "CoastSecchiEQR",    #3 Secchi Depth (EQR) 
@@ -112,7 +115,8 @@ IndListAll<-c("CoastOxygen",    #1 Dissolved Oxygen (O2)
 #IndList<-IndListAll[2:15]
 #IndList<-IndListAll[16:17]
 #IndList<-IndListAll[18:21]
-IndList<-IndListAll[2:3]
+#IndList<-IndListAll[2:3]
+IndList<-IndListAll
 
 
 #IndList<-c("CoastOxygen") 
@@ -124,6 +128,7 @@ wbcount<-nrow(wblist)
 # Loop through distinct waterbodies and periods in the data
 bOVR<-TRUE
 bAPP<-FALSE
+
 
 for(iWB in 1:wbcount){
   
@@ -147,7 +152,7 @@ for(iWB in 1:wbcount){
   
   WB <- resAvg %>% group_by(WB,Type,Period,Region,Typename) %>% summarise()
   
-  db <- dbConnect(SQLite(), dbname="output/ekostatSecchi.db")
+  db <- dbConnect(SQLite(), dbname="output/ekostattest.db")
   dbWriteTable(conn = db, name = "resAvg", resAvg, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resMC", resMC, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resErr", resErr, overwrite=bOVR,append=bAPP, row.names=FALSE)
