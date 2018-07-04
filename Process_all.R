@@ -22,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 10 #200 #20 #1000  #number of Monte Carlo simulations
+nSimMC <- 100 #200 #20 #1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 
@@ -85,9 +85,22 @@ df <- df %>% filter(!is.na(period))
 #Problem O2 data - to be analysed later. Removing these is just a quick fix!
 df$O2<-ifelse(df$WB=="SE644730-210650" & 
                 df$period=="2010-2015",NA,df$O2)
+df$O2<-ifelse(df$WB=="SE633550-200700" & 
+                df$period=="2004-2009",NA,df$O2)
+df$O2<-ifelse(df$WB=="SE634110-201920" & 
+                df$period=="2004-2009",NA,df$O2)
+df$O2<-ifelse(df$WB=="SE634230-201605" & 
+                df$period=="2010-2015",NA,df$O2)
+df$O2<-ifelse(df$WB=="SE644150-211000" & 
+                df$period=="2010-2015",NA,df$O2)
+df$O2<-ifelse(df$WB %in% c("SE563000-123351","SE582705-163350","SE583000-165600"),
+              NA,df$O2)
 
 
-df <- df %>% filter(!WB_ID %in% c("SE563000-123351","SE582705-163350","SE583000-165600"))
+wb1<-1
+
+
+
 
 
 IndListAll<-c("CoastOxygen",    #1 Dissolved Oxygen (O2) 
@@ -130,7 +143,7 @@ bOVR<-TRUE
 bAPP<-FALSE
 
 
-for(iWB in 1:wbcount){
+for(iWB in wb1:wbcount){
   
   dfselect<-df %>% filter(WB == wblist$WB[iWB])
   cat(paste0("WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")\n"))
@@ -152,7 +165,7 @@ for(iWB in 1:wbcount){
   
   WB <- resAvg %>% group_by(WB,Type,Period,Region,Typename) %>% summarise()
   
-  db <- dbConnect(SQLite(), dbname="output/ekostattest.db")
+  db <- dbConnect(SQLite(), dbname="output/ekostat.db")
   dbWriteTable(conn = db, name = "resAvg", resAvg, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resMC", resMC, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resErr", resErr, overwrite=bOVR,append=bAPP, row.names=FALSE)
