@@ -22,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 10 #200 #20 #1000  #number of Monte Carlo simulations
+nSimMC <- 10#00 #200 #20 #1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 
@@ -81,7 +81,7 @@ df$obspoint <- df$station
 df <- df %>% mutate(year=year(date),month=month(date)) %>% 
   mutate(period=ifelse(year<2004,NA,ifelse(year<2010,"2004-2009",ifelse(year<2016,"2010-2015","2016-2021"))))
 df <- df %>% filter(!is.na(period))
-
+if(FALSE){
 #Problem O2 data - to be analysed later. Removing these is just a quick fix!
 df$O2<-ifelse(df$WB=="SE644730-210650" & 
                 df$period=="2010-2015",NA,df$O2)
@@ -93,11 +93,13 @@ df$O2<-ifelse(df$WB=="SE634230-201605" &
                 df$period=="2010-2015",NA,df$O2)
 df$O2<-ifelse(df$WB=="SE644150-211000" & 
                 df$period=="2010-2015",NA,df$O2)
-df$O2<-ifelse(df$WB %in% c("SE563000-123351","SE582705-163350","SE583000-165600"),
-              NA,df$O2)
 df$O2<-ifelse(df$WB=="SE634210-202020" & 
                 df$period=="2004-2009",NA,df$O2)
-
+df$O2<-ifelse(df$WB=="SE636570-203590" & 
+                df$period=="2004-2009",NA,df$O2)
+df$O2<-ifelse(df$WB %in% c("SE563000-123351","SE582705-163350","SE583000-165600"),
+              NA,df$O2)
+}
 
 wb1<-1
 
@@ -148,16 +150,19 @@ wbcount<-nrow(wblist)
 # Loop through distinct waterbodies and periods in the data
 bOVR<-TRUE
 bAPP<-FALSE
+#bOVR<-FALSE
+#bAPP<-TRUE
 
 
 for(iWB in wb1:wbcount){
+  cat(paste0("Time now: ",Sys.time(),"\n"))
   
   dfselect<-df %>% filter(WB == wblist$WB[iWB])
   cat(paste0("WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")\n"))
   
   AssessmentResults <- Assessment(dfselect, nsim = nSimMC, IndList,df.bounds,df.bounds.hypox,df.bathy,df.indicators,df.variances)
   
-  cat(paste0("Time elapsed: ",Sys.time() - start_time,"\n"))
+  cat(paste0("           time elapsed: ",Sys.time() - start_time,"\n"))
   
   resAvg <- AssessmentResults[[1]]
   resMC <- AssessmentResults[[2]]
@@ -172,7 +177,7 @@ for(iWB in wb1:wbcount){
   
   WB <- resAvg %>% group_by(WB,Type,Period,Region,Typename) %>% summarise()
   
-  db <- dbConnect(SQLite(), dbname="output/ekostat_local.db")
+  db <- dbConnect(SQLite(), dbname="output/ekostat.db")
   dbWriteTable(conn = db, name = "resAvg", resAvg, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resMC", resMC, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resErr", resErr, overwrite=bOVR,append=bAPP, row.names=FALSE)
