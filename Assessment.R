@@ -9,13 +9,13 @@
 #' 
 #' @examples
 Assessment <-
-  function(df.all,nsim=1000,IndicatorList) {
+  function(df.all,nsim=1000,IndicatorList,df.bounds,df.bounds.hypox,df.bathy,df.indicators,df.variances) {
     
-    df.bounds<-ReadBounds()
-    df.bounds.hypox<-ReadBoundsHypoxicArea()
-    df.bathy<-ReadBathymetry()
-    df.indicators<-ReadIndicatorType()
-    df.variances<-ReadVariances()
+    # df.bounds<-ReadBounds()
+    # df.bounds.hypox<-ReadBoundsHypoxicArea()
+    # df.bathy<-ReadBathymetry()
+    # df.indicators<-ReadIndicatorType()
+    # df.variances<-ReadVariances()
     
     df.all$typology<-gsub("SE_", "", df.all$typology)
 
@@ -36,7 +36,7 @@ Assessment <-
       
       for(iPeriod in 1:pcount){
         
-        df <- df.all %>% filter(WB == wblist$WB[iWB],period == plist$period[iPeriod])
+        dfp <- df.all %>% filter(WB == wblist$WB[iWB],period == plist$period[iPeriod])
         #cat(paste0("WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")  Period: ",plist$period[iPeriod],"\n"))
         cat(paste0("  Period: ",plist$period[iPeriod]," \n"))
         
@@ -49,11 +49,11 @@ Assessment <-
           BoundsList<-df.bounds %>% filter(Type==typology,Indicator==iInd)
           IndSubtypes<-distinct(BoundsList,Depth_stratum)
           subcount<-nrow(IndSubtypes)
-          dfsubs<-df
+          dfsubs<-dfp
           #cat(paste0("Indicator: ",iInd," "))
-              
+              #browser()
           for(iSub in 1:subcount){
-            
+            df<-dfsubs
             subtype<-IndSubtypes[iSub,1]
             if(!is.na(subtype)){
               if(subtype!=""){

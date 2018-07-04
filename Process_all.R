@@ -22,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 100 #200 #20 #1000  #number of Monte Carlo simulations
+nSimMC <- 10 #200 #20 #1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 
@@ -95,11 +95,18 @@ df$O2<-ifelse(df$WB=="SE644150-211000" &
                 df$period=="2010-2015",NA,df$O2)
 df$O2<-ifelse(df$WB %in% c("SE563000-123351","SE582705-163350","SE583000-165600"),
               NA,df$O2)
+df$O2<-ifelse(df$WB=="SE634210-202020" & 
+                df$period=="2004-2009",NA,df$O2)
 
 
 wb1<-1
 
 
+df.bounds<-ReadBounds()
+df.bounds.hypox<-ReadBoundsHypoxicArea()
+df.bathy<-ReadBathymetry()
+df.indicators<-ReadIndicatorType()
+df.variances<-ReadVariances()
 
 
 
@@ -148,7 +155,7 @@ for(iWB in wb1:wbcount){
   dfselect<-df %>% filter(WB == wblist$WB[iWB])
   cat(paste0("WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")\n"))
   
-  AssessmentResults <- Assessment(dfselect, nsim = nSimMC, IndList)
+  AssessmentResults <- Assessment(dfselect, nsim = nSimMC, IndList,df.bounds,df.bounds.hypox,df.bathy,df.indicators,df.variances)
   
   cat(paste0("Time elapsed: ",Sys.time() - start_time,"\n"))
   
@@ -165,7 +172,7 @@ for(iWB in wb1:wbcount){
   
   WB <- resAvg %>% group_by(WB,Type,Period,Region,Typename) %>% summarise()
   
-  db <- dbConnect(SQLite(), dbname="output/ekostat.db")
+  db <- dbConnect(SQLite(), dbname="output/ekostat_local.db")
   dbWriteTable(conn = db, name = "resAvg", resAvg, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resMC", resMC, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resErr", resErr, overwrite=bOVR,append=bAPP, row.names=FALSE)
