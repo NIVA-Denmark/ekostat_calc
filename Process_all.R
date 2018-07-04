@@ -22,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 10#00 #200 #20 #1000  #number of Monte Carlo simulations
+nSimMC <- 1000 #200 #20 #1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 
