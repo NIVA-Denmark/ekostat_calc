@@ -120,13 +120,17 @@ OxygenTest2 <- function(df) {
   years <- df %>% group_by(year) %>% summarise()
   # Ensure that the profiles are sorted by depth and contain oxygen concentrations
   df <- df %>% group_by(station,date,time,station_depth,depth) %>% filter(is.na(xvar) == FALSE)
+  # Use measured profile from surface until O2 concentrations has decreased >1 ml/l
+  O2surface <- df %>% group_by(station,date,time,station_depth) %>% summarise(O2surface = O2[which.min(depth)])
+  df <- full_join(df,O2surface,c("station","date","time","station_depth"))
+  df$xvar <- ifelse(df$O2<df$O2surface-1,df$xvar,df$O2)
   # find depth for 3.5 ml/l by extrapolation, when this threshold is not in the profile
   O2bottom_ext <- df %>% group_by(station,date,time,station_depth) %>% summarise(n_obs =n(),
-                        O2bottom1 = xvar[which.max(depth)],O2bottom2 = ifelse(n_obs>1,xvar[which.max(depth)-1],NA),
-                        depth1 = depth[which.max(depth)],depth2 =ifelse(n_obs>1,depth[which.max(depth)-1],NA),
-                        O2clinedepth_max=ifelse(n_obs>1,ifelse(O2bottom1>3.5 && O2bottom2-O2bottom1>0,depth1+(3.5-O2bottom1)/(O2bottom2-O2bottom1)*(depth2-depth1),1000),NA))  # find profile statistics for tests and indicator calculation
+                                                                                 O2bottom1 = xvar[which.max(depth)],O2bottom2 = ifelse(n_obs>1,xvar[which.max(depth)-1],NA),
+                                                                                 depth1 = depth[which.max(depth)],depth2 =ifelse(n_obs>1,depth[which.max(depth)-1],NA),
+                                                                                 O2clinedepth_max=ifelse(n_obs>1,ifelse(O2bottom1>3.5 && O2bottom2-O2bottom1>0,depth1+(3.5-O2bottom1)/(O2bottom2-O2bottom1)*(depth2-depth1),1000),NA))  # find profile statistics for tests and indicator calculation
   O2bottom <- df %>% group_by(station,date,time,station_depth) %>% summarise(n_obs =n(), O2range = range(xvar)[2]-range(xvar)[1],
-                        max_depth=max(depth),O2bottom = xvar[which.max(depth)],O2clinedepth = ifelse(n_obs>1 && O2range>0,approx(xvar,depth,c(3.5))$y,NA))
+                                                                             max_depth=max(depth),O2bottom = xvar[which.max(depth)],O2clinedepth = ifelse(n_obs>1 && O2range>0,approx(xvar,depth,c(3.5))$y,NA))
   # If O2clinedepth is not in the profile then use the extrapolated value
   O2bottom <- full_join(O2bottom,O2bottom_ext,c("station","date","time","station_depth"))
   O2bottom <- O2bottom %>% mutate(O2clinedepth = ifelse(is.na(O2clinedepth),O2clinedepth_max,O2clinedepth),depth1 = NULL, depth2 = NULL, O2bottom1 = NULL, O2bottom2 = NULL, O2clinedepth_max = NULL)
@@ -135,9 +139,10 @@ OxygenTest2 <- function(df) {
   # Calculate test1 as average of O2 observations at bottom (<1.5 m from bottom depth) below the 25-percentile for Jan-Dec
   lower_quantile <- quantile(O2bottom$O2bottom,na.rm=TRUE)[2]
   df1 <- O2bottom %>% filter(station_depth-max_depth<1.5) %>% filter(O2bottom<=lower_quantile) %>% mutate(year=lubridate::year(date))
-#  df1 <- df %>% filter(station_depth-depth<1.5) %>% filter(xvar<=quantile(xvar,na.rm=TRUE)[2])
+  #  df1 <- df %>% filter(station_depth-depth<1.5) %>% filter(xvar<=quantile(xvar,na.rm=TRUE)[2])
   O2_test1 <- mean(df1$O2bottom)
   O2_test1_yearmeans <- df1 %>% group_by(year) %>% summarise(O2bottom = mean(O2bottom))
+  # Complete with all years having O2 data
   O2_test1_yearmeans <- left_join(years,O2_test1_yearmeans,c("year"))
   # Calculate EQR from Table 7.1 in Handbook
   EQR_test1 <- approx(c(-5.0,0.0,1.0,2.1,3.5,7.0),c(0,0.2,0.4,0.6,0.8,1),O2_test1,yleft=0,yright=1)$y
@@ -152,6 +157,7 @@ OxygenTest2 <- function(df) {
   }
   O2_test2 <- mean(df2$O2bottom)
   O2_test2_yearmeans <- df2 %>% group_by(year) %>% summarise(O2bottom = mean(O2bottom))
+  # Complete with all years having O2 data
   O2_test2_yearmeans <- left_join(years,O2_test2_yearmeans,c("year"))
   # Calculate indicator for percent area affected by <3.5 ml/l
   df2 <- O2bottom %>% mutate(month = lubridate::month(date),year = lubridate::year(date)) %>% filter(month %in% c(6,7,8,9,10,11,12))
@@ -163,6 +169,8 @@ OxygenTest2 <- function(df) {
   }
   hyparea <- mean(df2$area_hyp)
   hyparea_yearmeans <- df2 %>% group_by(year) %>% summarise(area_hyp = mean(area_hyp))
+  # Complete with all years having O2 data
+  hyparea_yearmeans <- left_join(years,hyparea_yearmeans,c("year"))
   # Calculate EQR from Table 7.1 in Handbook
   EQR_test2 <- approx(BoundariesHypoxicArea,c(0,0.2,0.4,0.6,0.8,1),hyparea,yleft=0,yright=1)$y
   EQR_test2_yearmeans <- approx(BoundariesHypoxicArea,c(0,0.2,0.4,0.6,0.8,1),hyparea_yearmeans$area_hyp,yleft=0,yright=1)$y
@@ -174,6 +182,7 @@ OxygenTest2 <- function(df) {
   }
   return(res)
 }
+
 
 #' Generic routine for calculating indicator statistics
 #' 
