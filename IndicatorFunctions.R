@@ -1,7 +1,9 @@
 # Include supporting routines for indicator calculations
 source("CalculateIndicatorSupport.R")
 
-# Aggregation principle used for Chlorophyll
+# AGGREGATION ROUTINES BASED ON MEASUREMENTS
+# Aggregation principle used for e.g. coastal chlorophyll
+# Aggregate over stations to yearly means then over years
 Aggregate_year_station <- function(df) {
   yearmeans <- df %>%    group_by(year,station) %>%
                          summarise(xvar = mean(xvar,na.rm = TRUE)) %>%
@@ -13,7 +15,8 @@ Aggregate_year_station <- function(df) {
   return(res)
 }
 
-# Aggregation principle used for nutrients
+# Aggregation principle used for e.g. nutrients
+# Aggregate over years and then period
 Aggregate_year <- function(df) {
   yearmeans <- df %>% group_by(year) %>%
     summarise(xvar = mean(xvar,na.rm = TRUE))
@@ -23,7 +26,8 @@ Aggregate_year <- function(df) {
   return(res)
 }
 
-# Aggregation principle used for Secchi depth
+# Aggregation principle used for e.g. Secchi depth
+# Aggregate over entire period
 Aggregate_period <- function(df) {
   yearmeans <- df %>% group_by(year) %>%
     summarise(xvar = mean(xvar,na.rm = TRUE))
@@ -33,8 +37,71 @@ Aggregate_period <- function(df) {
   return(res)
 }
 
-# Aggregation principle used for coastal chlorophyll
-AggregateEQR_year_station <- function(df) {
+# AGGREGATION PRINCIPLES BASED ON EQR VALUES
+# Aggregation principle used for e.g. biovolume in lakes
+# Aggregate over entire period and then calculate EQR value
+Aggregate_period_P_EQR <- function(df) {
+  yearmeans <- df %>% group_by(year) %>%
+    summarise(xvar = mean(RefCond,na.rm = TRUE)/mean(xvar,na.rm = TRUE))
+  
+  periodmean <- mean(df$RefCond)/mean(df$xvar)
+  res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
+  return(res)
+}
+
+# Aggregation principle used for e.g. biovolume in lakes
+# Aggregate over entire period and then calculate EQR value
+Aggregate_period_N_EQR <- function(df) {
+  yearmeans <- df %>% group_by(year) %>%
+    summarise(xvar = mean(xvar,na.rm = TRUE)/mean(RefCond,na.rm = TRUE))
+  
+  periodmean <- mean(df$xvar)/mean(df$RefCond)
+  res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
+  return(res)
+}
+
+# Aggregation principle used for DJ-index in rivers
+# Aggregate over entire period and then calculate EQR value after subtracting the value 5
+Aggregate_period_N_EQR5 <- function(df) {
+  yearmeans <- df %>% group_by(year) %>%
+    summarise(xvar = (mean(xvar,na.rm = TRUE)-5)/(mean(RefCond,na.rm = TRUE)-5))
+  
+  periodmean <- mean(df$xvar)/mean(df$RefCond)
+  res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
+  return(res)
+}
+
+# Aggregation principle used for proportions with EQR calculation, e.g. cyanobacteria in lakes
+# Aggregate over entire period and then calculate EQR value
+Aggregate_period_Prop_EQR <- function(df) {
+  yearmeans <- df %>% group_by(year) %>%
+    summarise(xvar = (1-mean(xvar,na.rm = TRUE))/(1-mean(RefCond,na.rm = TRUE)))
+
+  periodmean <- (1-mean(df$xvar))/(1-mean(df$RefCond))
+  res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
+  return(res)
+}
+
+# Aggregation principle used for proportions with EQR calculation, e.g. cyanobacteria in lakes
+# Aggregate over entire period and then calculate EQR value
+Aggregate_period_TPI_EQR <- function(df) {
+  yearmeans <- df %>% group_by(year) %>%
+    summarise(x = mean(xvar,na.rm = TRUE),r50 = mean(RefCond),r75 = mean(HG_boundary),xvar = (r75-r50)/(x+r75-2*r50))
+  yearmeans <- yearmeans %>% mutate(x = NULL,r50 = NULL, r75 = NULL)
+  
+  r50 = mean(df$RefCond)
+  r75 = mean(df$HG_boundary)
+  periodmean <- (r75-r50)/(mean(df$xvar)+r75-2*r50)
+  
+  res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
+  return(res)
+}
+
+
+# AGGREGATION PRINCIPLES BASED ON EQR OBSERVATIONS
+# Aggregation principle used for e.g. coastal chlorophyll as EQR
+# Compute EQR values and then aggregate over stations, years and period
+AggregateEQRtrunc_year_station <- function(df) {
   
   df <- mutate(df,xvarEQR = ifelse(xvar<RefCond,1,RefCond/xvar))
 
@@ -48,7 +115,8 @@ AggregateEQR_year_station <- function(df) {
   return(res)  
 }
 
-# Aggregation principle used for nutrients
+# Aggregation principle used for e.g. nutrients as EQR
+# Aggregate over years and then period
 AggregateEQR_year <- function(df) {
   
   df <- mutate(df,xvarEQR = RefCond/xvar)
@@ -61,6 +129,22 @@ AggregateEQR_year <- function(df) {
   return(res)  
 }
 
+
+# Aggregate over entire period
+# Indicator response positive to degradation, i.e. chlorophyll
+AggregateEQR_P_period <- function(df) {
+  
+  df <- mutate(df,xvarEQR = RefCond/xvar)
+  
+  yearmeans <- df %>% group_by(year) %>%
+    summarise(xvar = mean(xvarEQR,na.rm = TRUE))   # should be returned in xvar
+  
+  periodmean <- mean(df$xvarEQR)
+  res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
+  return(res)  
+}
+
+# Aggregate over entire period
 # Indicator response negative to degradation, i.e. Secchi depth
 AggregateEQR_N_period <- function(df) {
   
@@ -74,6 +158,21 @@ AggregateEQR_N_period <- function(df) {
   return(res)  
 }
 
+# Aggregate over entire period with truncation of values above 1
+# Indicator response negative to degradation, e.g. LakeFishAindexW5 and LakeFishEindexW3
+AggregateEQRtrunc_N_period <- function(df) {
+  
+  df <- mutate(df,xvarEQR = ifelse(xvar>RefCond,1,xvar/RefCond))
+  
+  yearmeans <- df %>% group_by(year) %>%
+    summarise(xvar = mean(xvarEQR,na.rm = TRUE))   # should be returned in xvar
+  
+  periodmean <- mean(df$xvarEQR)
+  res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
+  return(res)  
+}
+
+# SPECIAL CASES FOR COASTAL INDICATORS
 # Calculation of BQI indicator according to Handbook
 BQIbootstrap <- function(df) {
   yearstatmeans <- df %>%    group_by(year,station) %>%
@@ -235,14 +334,46 @@ CalculateIndicator <-
                    CoastTPwinterEQR  = df$TP,
                    CoastOxygen       = df$O2,
                    CoastBQI          = df$BQI,
-                   CoastMSMDI        = df$MSMDI)
+                   CoastMSMDI        = df$MSMDI,
+                   LakeBiovol        = df$biovol,
+                   LakeBiovolEQR     = df$biovol,
+                   LakePropCyano     = df$Proportion_cyanobacteria,
+                   LakePropCyanoEQR  = df$Proportion_cyanobacteria,
+                   LakeTPI           = df$TrophicPlanktonIndex,
+                   LakeTPIEQR        = df$TrophicPlanktonIndex,
+                   LakeNphytspec     = df$Nspecies_phytoplankton,
+                   LakeNphytspecEQR  = df$Nspecies_phytoplankton,
+                   LakeChla          = df$chla,
+                   LakeChlaEQR       = df$chla,
+                   LakeTMIEQR        = df$TrophicMacrophyteIndex,
+                   LakeASPTEQR       = df$BenthicInvertebratesASPT,
+                   LakeBQIEQR        = df$BenthicInvertebratesBQI,
+                   LakeMILAEQR       = df$BenthicInvertebratesMILA,
+                   LakeEQR8          = df$EQR8,
+                   LakeAindexW5      = df$AindexW5,
+                   LakeEindexW3      = df$EindexW3,
+                   LakeTPsummerEQR   = df$TP,
+                   LakeSecchiDepthEQR= df$SecchiDepth,
+                   RiverIPS          = df$BenthicDiatomsIPS,
+                   RiverIPSEQR       = df$BenthicDiatomsIPS,
+                   RiverPctPT        = df$BenthicDiatomsPctPT,
+                   RiverTDI          = df$BenthicDiatomsTDI,
+                   RiverACID         = df$BenthicDiatomsACID,
+                   RiverASPTEQR      = df$BenthicInvertebratesASPT,
+                   RiverDJEQR        = df$BenthicInvertebratesDJ,
+                   RiverMISAEQR      = df$BenthicInvertebratesMISA,
+                   RiverVIX          = df$VIX,
+                   RiverVIXh         = df$VIXh,
+                   RiverVIXsm        = df$VIXsm,
+                   RiverTPEQR        = df$TP
+    )
     df <- mutate(df,xvar=xvar)
 # Associating indicators with transformation from observations
     f_fun <- switch(Indicator,
                     CoastChla         = Aggregate_year_station,
-                    CoastChlaEQR      = AggregateEQR_year_station,
+                    CoastChlaEQR      = AggregateEQRtrunc_year_station,
                     CoastBiovol       = Aggregate_year_station,
-                    CoastBiovolEQR    = AggregateEQR_year_station,
+                    CoastBiovolEQR    = AggregateEQRtrunc_year_station,
                     CoastSecchi       = Aggregate_period,
                     CoastSecchiEQR    = AggregateEQR_N_period,
                     CoastDINwinter    = Aggregate_year,
@@ -259,7 +390,39 @@ CalculateIndicator <-
                     CoastTPwinterEQR  = AggregateEQR_year,
                     CoastOxygen       = OxygenTest2,
                     CoastBQI          = BQIbootstrap,
-                    CoastMSMDI        = Aggregate_period)
+                    CoastMSMDI        = Aggregate_period,
+                    LakeBiovol        = Aggregate_period,
+                    LakeBiovolEQR     = Aggregate_period_P_EQR,
+                    LakePropCyano     = Aggregate_period,
+                    LakePropCyanoEQR  = Aggregate_period_Prop_EQR,
+                    LakeTPI           = Aggregate_period,
+                    LakeTPIEQR        = Aggregate_period_TPI_EQR,
+                    LakeNphytspec     = Aggregate_period,
+                    LakeNphytspecEQR  = Aggregate_period_N_EQR,
+                    LakeChla          = Aggregate_period,
+                    LakeChlaEQR       = Aggregate_period_P_EQR,
+                    LakeTMIEQR        = Aggregate_period_N_EQR,
+                    LakeASPTEQR       = Aggregate_period_N_EQR,
+                    LakeBQIEQR        = Aggregate_period_N_EQR,
+                    LakeMILAEQR       = Aggregate_period_N_EQR,
+                    LakeEQR8          = Aggregate_period,
+                    LakeAindexW5      = AggregateEQRtrunc_N_period,
+                    LakeEindexW3      = AggregateEQRtrunc_N_period,
+                    LakeTPsummerEQR   = Aggregate_period_P_EQR,
+                    LakeSecchiDepthEQR= Aggregate_period_N_EQR,
+                    RiverIPS          = Aggregate_period,
+                    RiverIPSEQR       = Aggregate_period_N_EQR,
+                    RiverPctPT        = Aggregate_period,
+                    RiverTDI          = Aggregate_period,
+                    RiverACID         = Aggregate_period,
+                    RiverASPTEQR      = Aggregate_period_N_EQR,
+                    RiverDJEQR        = Aggregate_period_N_EQR5,
+                    RiverMISAEQR      = Aggregate_period_N_EQR,
+                    RiverVIX          = Aggregate_period,
+                    RiverVIXh         = Aggregate_period,
+                    RiverVIXsm        = Aggregate_period,
+                    RiverTPEQR        = Aggregate_period_P_EQR
+                    )
 # Assigning transformations for measurements to obtain normal distributed variates
     g_fun <- switch(Indicator,
                     CoastChla         = log,
@@ -282,7 +445,39 @@ CalculateIndicator <-
                     CoastTPwinterEQR  = log,
                     CoastOxygen       = identity,
                     CoastBQI          = identity,
-                    CoastMSMDI        = logit_w_replace)    
+                    CoastMSMDI        = logit_w_replace,
+                    LakeBiovol        = log,
+                    LakeBiovolEQR     = log,
+                    LakePropCyano     = logit_w_replace,
+                    LakePropCyanoEQR  = logit_w_replace,
+                    LakeTPI           = identity,
+                    LakeTPIEQR        = identity,
+                    LakeNphytspec     = log,
+                    LakeNphytspecEQR  = log,
+                    LakeChla          = log,
+                    LakeChlaEQR       = log,
+                    LakeTMIEQR        = identity,
+                    LakeASPTEQR       = identity,
+                    LakeBQIEQR        = identity,
+                    LakeMILAEQR       = identity,
+                    LakeEQR8          = logit_w_replace,
+                    LakeAindexW5      = logit_w_replace,
+                    LakeEindexW3      = logit_w_replace,
+                    LakeTPsummerEQR   = log,
+                    LakeSecchiDepthEQR= identity,
+                    RiverIPS          = identity,
+                    RiverIPSEQR       = identity,
+                    RiverPctPT        = logit_w_replace,
+                    RiverTDI          = identity,
+                    RiverACID         = identity,
+                    RiverASPTEQR      = identity,
+                    RiverDJEQR        = identity,
+                    RiverMISAEQR      = identity,
+                    RiverVIX          = logit_w_replace,
+                    RiverVIXh         = logit_w_replace,
+                    RiverVIXsm        = logit_w_replace,
+                    RiverTPEQR        = log
+    )    
 # Assigning inverse transformations of g_fun
     g_fun_inv <- switch(Indicator,
                     CoastChla         = exp,
@@ -305,7 +500,39 @@ CalculateIndicator <-
                     CoastTPwinterEQR  = exp,
                     CoastOxygen       = identity,
                     CoastBQI          = identity,
-                    CoastMSMDI        = plogis) 
+                    CoastMSMDI        = plogis,
+                    LakeBiovol        = exp,
+                    LakeBiovolEQR     = exp,
+                    LakePropCyano     = plogis,
+                    LakePropCyanoEQR  = plogis,
+                    LakeTPI           = identity,
+                    LakeTPIEQR        = identity,
+                    LakeNphytspec     = exp,
+                    LakeNphytspecEQR  = exp,
+                    LakeChla          = exp,
+                    LakeChlaEQR       = exp,
+                    LakeTMIEQR        = identity,
+                    LakeASPTEQR       = identity,
+                    LakeBQIEQR        = identity,
+                    LakeMILAEQR       = identity,
+                    LakeEQR8          = plogis,
+                    LakeAindexW5      = plogis,
+                    LakeEindexW3      = plogis,
+                    LakeTPsummerEQR   = exp,
+                    LakeSecchiDepthEQR= identity,
+                    RiverIPS          = identity,
+                    RiverIPSEQR       = identity,
+                    RiverPctPT        = plogis,
+                    RiverTDI          = identity,
+                    RiverACID         = identity,
+                    RiverASPTEQR      = identity,
+                    RiverDJEQR        = identity,
+                    RiverMISAEQR      = identity,
+                    RiverVIX          = plogis,
+                    RiverVIXh         = plogis,
+                    RiverVIXsm        = plogis,
+                    RiverTPEQR        = exp
+                    ) 
 # Switch year for winter months (Nov+Dec) to include together with (Jan+Feb)
     if (Indicator %in% c("CoastDINwinterEQR","CoastDIPwinterEQR","CoastTNwinter","CoastTNwinterEQR","CoastTPwinter","CoastTPwinterEQR")) {
       df <- mutate(df,year=ifelse(month %in% c(11,12),year+1,year))
@@ -314,16 +541,24 @@ CalculateIndicator <-
     df <- Filter_df(df,MonthInclude,startyear,endyear)    
 # setting RefCond depending on salinity for indicators with salinity correction
     RefCond <- mat.or.vec(nrow(df), 1)
-    if (Indicator %in% c("CoastChlaEQR","CoastBiovolEQR","CoastSecchiEQR","CoastDINwinterEQR","CoastDIPwinterEQR","CoastTNsummerEQR","CoastTPsummerEQR","CoastTNwinterEQR","CoastTPwinterEQR")) {
+    if (Indicator %in% c("CoastChlaEQR","CoastBiovolEQR","CoastSecchiEQR","CoastDINwinterEQR","CoastDIPwinterEQR","CoastTNsummerEQR","CoastTPsummerEQR","CoastTNwinterEQR","CoastTPwinterEQR",
+                         "LakeBiovolEQR","LakePropCyanoEQR","LakeTPIEQR","LakeNphytspecEQR","LakeChlaEQR","LakeTMIEQR","LakeASPTEQR","LakeBQIEQR","LakeMILAEQR","LakeAindexW5","LakeEindexW3","LakeTPsummerEQR","LakeSecchiDepthEQR",
+                         "RiverIPSEQR","RiverASPTEQR","RiverDJEQR","RiverMISAEQR","RiverTPEQR")) {
        df <- filter(df,!is.na(sali))
        RefCond <- mat.or.vec(nrow(df), 1)
        sali_class <- findInterval(df$sali, c(seq(0, 35)))
        for (i in 1:nrow(df)) {RefCond[i] <- RefCond_sali[sali_class[i]]}
        }
     df <- mutate(df,RefCond = RefCond) 
+# Adding H-G boundary to data for TPI calculations of EQR
+    if (Indicator %in% c("LakeTPIEQR")) {
+      HG_boundary <- mat.or.vec(nrow(df), 1)
+      for (i in 1:nrow(df)) {HG_boundary[i] <- RefCond_sali[2]}
+      df <- mutate(df,HG_boundary = HG_boundary) 
+    }
 # Calculate number of years, stations, months, institutions and combinations thereof in df 
     ndf <- DF_Ncalculation(df)
-    # Return from function if no observations for calculation
+# Return from function if no observations for calculation
     if (ndf$n_obs == 0) return(list(result_code=-90))
 # Estimate mean of the transformed observation for simulation
     alpha <- df %>% group_by(year) %>% summarise(mean = mean(g_fun(xvar),na.rm=TRUE))
@@ -379,8 +614,11 @@ CalculateIndicator <-
                          upper_10 = apply(simresyear,1,quantile,probs=0.95,na.rm=TRUE),
                          upper_5  = apply(simresyear,1,quantile,probs=0.975,na.rm=TRUE),
                          upper_1  = apply(simresyear,1,quantile,probs=0.995,na.rm=TRUE))
-    # Check if there is at least 3 years of data - generic criterion?
-    flag <- ifelse(length(annual$mean)<3,-1,flag)
+    # Check if there is at least 3 years of data for those indicators with such specification
+    if(Indicator %in% c("CoastChla","CoastChlaEQR","CoastBiovol","CoastBiovolEQR","CoastDINwinter","CoastDINwinterEQR","CoastDIPwinter","CoastDIPwinterEQR","CoastTNsummer","CoastTNsummerEQR","CoastTPsummer","CoastTPsummerEQR","CoastTNwinter","CoastTNwinterEQR","CoastTPwinter","CoastTPwinterEQR","CoastOxygen",
+                        "LakeBiovol","LakeBiovolEQR","LakePropCyano","LakePropCyanoEQR","LakeNphytspec","LakeChla","LakeChlaEQR","LakeTPsummerEQR","LakeSecchiDepthEQR","RiverTPEQR")) { 
+       flag <- ifelse(length(annual$mean)<3,-1,flag)
+    }
 
     res <- list(period=period,annual=annual,indicator_sim=simres,result_code=flag)
     return(res)
