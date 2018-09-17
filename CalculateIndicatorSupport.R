@@ -29,18 +29,18 @@
 #' 
 DF_Ncalculation <-
   function(df) {
-    n_obs <- nrow(df)
-    n_station <- length(unique(df$station))
-    n_obspoint <- nrow(unique(data.frame(df$station,df$obspoint)))
-    n_year <- length(unique(df$year))
-    n_month <- length(unique(df$month))
-    n_yearmonth <- nrow(unique(data.frame(df$year,df$month)))
-    n_stationyear <- nrow(unique(data.frame(df$station,df$year)))
-    n_stationmonth <- nrow(unique(data.frame(df$station,df$month)))
-    n_stationdate <- nrow(unique(data.frame(df$station,df$date)))
-    n_institution <- length(unique(df$institution))
-    res <- list(n_obs=n_obs,n_station=n_station,n_obspoint=n_obspoint,n_year=n_year,n_month=n_month,n_yearmonth=n_yearmonth,n_stationyear=n_stationyear,n_stationmonth=n_stationmonth,n_stationdate=n_stationdate,n_institution=n_institution)
-    return(res)
+           n_obs <- nrow(df)
+           n_station <- length(unique(df$station))
+           n_obspoint <- nrow(unique(data.frame(df$station,df$obspoint)))
+           n_year <- length(unique(df$year))
+           n_month <- length(unique(df$month))
+           n_yearmonth <- nrow(unique(data.frame(df$year,df$month)))
+           n_stationyear <- nrow(unique(data.frame(df$station,df$year)))
+           n_stationmonth <- nrow(unique(data.frame(df$station,df$month)))
+           n_stationdate <- nrow(unique(data.frame(df$station,df$date)))
+           n_institution <- length(unique(df$institution))
+           res <- list(n_obs=n_obs,n_station=n_station,n_obspoint=n_obspoint,n_year=n_year,n_month=n_month,n_yearmonth=n_yearmonth,n_stationyear=n_stationyear,n_stationmonth=n_stationmonth,n_stationdate=n_stationdate,n_institution=n_institution)
+           return(res)
   }
 
 #' Function SimVector generates a vector of n random normal variates 
@@ -134,7 +134,7 @@ Filter_df <-
     # Remove observations with missing values    
     df <- filter(df,!is.na(xvar))
     # Use the generic name yvar for the variable
-    #    df$yvar<-df[,var]
+#    df$yvar<-df[,var]
     return(df)
   }
 
@@ -219,4 +219,27 @@ Varlist_lognormal <-
 stderr_aggr <-
   function(x) {
     sqrt(sum(x^2))/length(x)
+  }
+
+#' Function RefCond_LakeTPsummer calculates the reference condition for TP in µg/l as function of absorbance, altitude and lake depth
+RefCond_LakeTPsummer <-
+  function(AbsF,Altitude,LakeDepth=0) {
+    if (LakeDepth == 0) logP=1.561+0.295*log10(AbsF)-0.146*log10(Altitude)
+    else logP=1.627+0.246*log10(AbsF)-0.139*log10(Altitude)-0.197*log10(LakeDepth)
+    return(10**logP)
+  }
+
+#' Function RefCond_RiverTP calculates the reference condition for TP in µg/l as function of absorbance, altitude and lake depth
+RefCond_RiverTP <-
+  function(AbsF,Altitude,CationConc=0) {
+    if (CationConc == 0) logP=1.380+0.240*log10(AbsF)-0.0143*sqrt(Altitude)
+    else logP=1.533+0.240*log10(CationConc)+0.301*log10(AbsF)-0.012*sqrt(Altitude)
+    return(10**logP)
+  }
+
+#' Function RefCond_LakeSecchiDepth calculates the reference condition for Secchi depth in m as function of absorbance, altitude and lake depth
+RefCond_LakeSecchiDepth <-
+  function(AbsF,RefCondChla) {
+    logSD=0.678-0.116*log10(AbsF)-0.471*log10(RefCondChla)
+    return(10**logSD)
   }
