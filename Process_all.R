@@ -155,9 +155,9 @@ bAPP<-FALSE
 #bAPP<-TRUE
 
 
-dflist <- df %>% split(.$WB)
+#dflist <- df %>% split(.$WB)
 
-dflist2 <- dflist %>% map(~ Assessment(.,nsim = 10, IndList,df.bounds,df.bounds.hypox,df.bathy,df.indicators,df.variances))
+#dflist2 <- dflist %>% map(~ Assessment(.,nsim = 10, IndList,df.bounds,df.bounds.hypox,df.bathy,df.indicators,df.variances))
 
 #--------------------------------------------------------------------------------------
 for(iWB in wbcount:wb1){
