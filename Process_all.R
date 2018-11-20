@@ -2,12 +2,12 @@
 # Do Monte Carlo simulations based on variance components
 # Save results to be used by shiny app to a SQLite database 
 
-
+# TeamViewer ID for niva\notebook-dk 753599521 MK0se4aw3
 rm(list = ls())
 
 library(RSQLite)
-library(dplyr)
-library(tidyr)
+library(tidyverse)
+#library(dplyr)
 library(lubridate)
 library(prodlim)
 library(matrixStats)
@@ -22,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 1000 #200 #20 #1000  #number of Monte Carlo simulations
+nSimMC <- 10#00 #200 #20 #1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 
@@ -139,6 +139,7 @@ IndListAll<-c("CoastOxygen",    #1 Dissolved Oxygen (O2)
 #IndList<-IndListAll[18:21]
 #IndList<-IndListAll[2:3]
 IndList<-IndListAll
+#IndList<-IndListAll[2:21] # without O2
 
 
 #IndList<-c("CoastOxygen") 
@@ -153,8 +154,19 @@ bAPP<-FALSE
 #bOVR<-FALSE
 #bAPP<-TRUE
 
+mtcars %>%
+  split(.$cyl) %>% # from base R
+  map(~ lm(mpg ~ wt, data = .)) %>%
+  map(summary) %>%
+  map_dbl("r.squared")
 
-for(iWB in wb1:wbcount){
+dflist <- df %>% split(.$WB)
+
+dflist2 <- dflist %>% map(~ Assessment(.,nsim = 10, IndList,df.bounds,df.bounds.hypox,df.bathy,df.indicators,df.variances))
+
+#--------------------------------------------------------------------------------------
+for(iWB in wbcount:wb1){
+#for(iWB in wb1:wbcount){
   cat(paste0("Time now: ",Sys.time(),"\n"))
   
   dfselect<-df %>% filter(WB == wblist$WB[iWB])
@@ -177,7 +189,7 @@ for(iWB in wb1:wbcount){
   
   WB <- resAvg %>% group_by(WB,Type,Period,Region,Typename) %>% summarise()
   
-  db <- dbConnect(SQLite(), dbname="output/ekostat.db")
+  db <- dbConnect(SQLite(), dbname="output/ekostat_coast.db")
   dbWriteTable(conn = db, name = "resAvg", resAvg, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resMC", resMC, overwrite=bOVR,append=bAPP, row.names=FALSE)
   dbWriteTable(conn = db, name = "resErr", resErr, overwrite=bOVR,append=bAPP, row.names=FALSE)
