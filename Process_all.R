@@ -22,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 10#00 #200 #20 #1000  #number of Monte Carlo simulations
+nSimMC <- 1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 #df1<-df
@@ -133,7 +133,8 @@ IndListAll<-c("CoastOxygen",    #1 Dissolved Oxygen (O2)
            "CoastChlaEQR",      #19 Chlorophyll a (EQR),
            "CoastBiovol",       #20 Phytoplankton biovolume
            "CoastBiovolEQR"     #21 Phytoplankton biovolume (EQR)
-)  
+) 
+ 
 #IndList<-IndListAll[2:15]
 #IndList<-IndListAll[16:17]
 #IndList<-IndListAll[18:21]
