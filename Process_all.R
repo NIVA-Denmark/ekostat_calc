@@ -25,6 +25,8 @@ start_time <- Sys.time()
 nSimMC <- 10#00 #200 #20 #1000  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
+#df1<-df
+#load("data/SASdata_v2.Rda")
 
 #Read waterbody data
 df_wb <- read.table("data/waterbodies.txt",fileEncoding = "UTF-8",
@@ -63,23 +65,21 @@ df <- df %>%
 type<-df %>% filter(!type=="") %>% group_by(WB_ID,type) %>% summarise() %>%
   rename(type2=type)
 
-df <- df %>% left_join(type,by=c("WB_ID"="WB_ID")) %>% mutate(type=ifelse(type=="",type2,type)) %>% select(-type2)
+df <- df %>% left_join(type,by=c("WB_ID"="WB_ID")) %>% 
+  mutate(type=ifelse(type=="",type2,type)) %>% 
+  select(-type2) %>%
+  mutate(station=ifelse(station=="",obspoint,station))
 
 df <- df %>% select(DistrictID,typology=type,station,WB_name,WB_ID,institution,station_depth,
-                    date,time,temp,sali,depth,secchi,
+                    date,time,sali,depth,secchi,
                     DIN,DIP,TN,TP,chla,biovol,O2,BQI,MSMDI)
 
-#df$WB <- paste0(df$WB_ID, " ", df$WB_name)
 df$WB <- df$WB_ID
 df$obspoint <- df$station
 
-#df<-df %>% filter(WB=="SE644730-210650")
-#df<-df %>% filter(WB=="SE582705-163350")
-#df<-df %>% filter(WB %in% c("SE581700-113000","SE582000-115270"))
-#df<-df %>% filter(WB=="SE554500-125001")
 
 df <- df %>% mutate(year=year(date),month=month(date)) %>% 
-  mutate(period=ifelse(year<2004,NA,ifelse(year<2010,"2004-2009",ifelse(year<2016,"2010-2015","2016-2021"))))
+  mutate(period=ifelse(year<2007,NA,ifelse(year<2013,"2007-2012","2013-2018")))
 df <- df %>% filter(!is.na(period))
 if(FALSE){
 #Problem O2 data - to be analysed later. Removing these is just a quick fix!
