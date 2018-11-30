@@ -71,27 +71,35 @@ Assessment <-
             # The oxygen indicator refers to two global dataframes: WB_bathymetry and BoundariesHypoxicArea
             # We need to set these before calling the O2 indicator
             # Indicator functions need to be modified so that thus information is sent as parameters in the function call!
-            
-            if (grepl("Oxygen",iInd,fixed=TRUE)) {
+            bHypoxicBoundsErr<-FALSE
+            if (iInd %in% c("CoastHypoxicArea")) {
               BoundariesHypoxicArea <<- df.bounds.hypox %>% filter(WB==wblist$WB[iWB]) %>% select(Worst,P.B,M.P,G.M,H.G,RefCond) %>% as.list()
               WB_bathymetry <<- df.bathy %>% filter(WB==wblist$WB[iWB]) %>% select(area_pct,depth)
               if(!nrow(WB_bathymetry)>0){
                 #cat(paste0("No bathymetry information for ",wblist$WB[iWB],"\n"))
                 # the following 3 lines should be removed - they create a false bathymetry dataset 
-                area_pct<-seq(1,100,by=1) 
-                depth<-area_pct
-                WB_bathymetry<<-data.frame(area_pct,depth)
+                #area_pct<-seq(1,100,by=1) 
+                #depth<-area_pct
+                #WB_bathymetry<<-data.frame(area_pct,depth)
+                cat("CoastHypoxicArea - No bathy info\n")
+                bHypoxicBoundsErr<-TRUE
               }
               if(!nrow(df.bounds.hypox %>% filter(WB==wblist$WB[iWB]))>0){
                 #cat(paste0("No Hypoxic Area boundaries for ",wblist$WB[iWB],"\n"))
                 # the following line should be removed - it creates a false hypoxic area boundaries dataset  
-                BoundariesHypoxicArea <<- df.bounds.hypox %>% filter(WB=="SE582000-115270") %>% select(Worst,P.B,M.P,G.M,H.G,RefCond) %>% as.list()
+                BoundariesHypoxicArea <<- df.bounds.hypox %>% filter(WB=="SE582000-115270") %>% 
+                  select(Worst,P.B,M.P,G.M,H.G,RefCond) %>% as.list()
+                cat("CoastHypoxicArea - No WB-specific bounds\n")
+                bHypoxicBoundsErr<-TRUE
               }
             }
             
-            
+            #browser()
             res<-IndicatorResults(df,typology,typology_varcomp,df.bounds,df.indicators,df.variances,iInd,startyear,endyear,nsim)
             #cat(paste0("Indicator: ",iInd,"  res=",res$result_code,"\n"))
+            if(bHypoxicBoundsErr){
+              res$result_code<- -78 # no hypoxic boundaries
+            }
             
             if(res$result_code %in% c(0,-1)){
               
@@ -421,6 +429,7 @@ GetClass<-function(df){
   df$Bnd2<-ifelse(df$ClassID==4,df$HG,df$Bnd2)
   df$Bnd1<-ifelse(df$ClassID==5,df$HG,df$Bnd1)
   df$Bnd2<-ifelse(df$ClassID==5,df$Ref,df$Bnd2)
+  #browser()
   df$EQR<-0.2*((df$ClassID-1)+(df$Value-df$Bnd1)/(df$Bnd2-df$Bnd1))
   df$EQR<-ifelse(df$ClassID>5,1,df$EQR)
   #Class cannot be better than "High":
@@ -470,6 +479,10 @@ VarianceComponents<-function(df.indicators,df.variances,typology,indicator){
   if(substr(indicator,1,4)=="Lake"){
     wtype<-"Lake"
   }
+  if(substr(indicator,1,5)=="Coast"){
+    wtype<-"Coastal"
+  }
+  
   #browser()
   df.variances<-df.variances %>% filter(Water_type==wtype,Type==typology, Measurement==measurement)
   variance_list <- list(V_station=df.variances$V_station[1],
@@ -503,7 +516,7 @@ IndicatorResults<-function(df,typology,typology_varcomp,df.bounds,df.indicators,
   
   variance_list<- VarianceComponents(df.indicators,df.variances,typology_varcomp,indicator)
   #cat(paste0(indicator,"\n"))
-  #browser()
+    #browser()
   res<-CalculateIndicator(indicator,df,RefCond_sali,variance_list,MonthInclude,startyear,endyear,n_iter=nsim)
 
 }

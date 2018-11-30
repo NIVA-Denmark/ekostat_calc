@@ -24,8 +24,8 @@ Coastal	Supporting	Oxygen	Oxygen	CoastHypoxicArea	??	Area affected by hypoxia (%
 Coastal	Supporting	Oxygen	Oxygen	CoastOxygen	??	Oxygen	Oxygen
 Lakes	Biological	Phytoplankton	Phytoplankton biomass	LakeBiovol	biovol	Phytoplankton biovolume	Phytoplankton biovolume
 Lakes	Biological	Phytoplankton	Phytoplankton biomass	LakeBiovolEQR	biovol	Phytoplankton biovolume	Phytoplankton biovolume
-Lakes	Biological	Phytoplankton	Phytoplankton composition	LakePctCyano	Proportion_cyanobacteria	Proportion cyanobacteria	Proportion cyanobacteria
-Lakes	Biological	Phytoplankton	Phytoplankton composition	LakePctCyanoEQR	Proportion_cyanobacteria	Proportion cyanobacteria	Proportion cyanobacteria (EQR)
+Lakes	Biological	Phytoplankton	Phytoplankton composition	LakePropCyano	Proportion_cyanobacteria	Proportion cyanobacteria	Proportion cyanobacteria
+Lakes	Biological	Phytoplankton	Phytoplankton composition	LakePropCyanoEQR	Proportion_cyanobacteria	Proportion cyanobacteria	Proportion cyanobacteria (EQR)
 Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeTPI	TrophicPlanktonIndex	Trophic Phytoplankton Index	Trophic Phytoplankton Index
 Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeTPIEQR	TrophicPlanktonIndex	Trophic Phytoplankton Index	Trophic Phytoplankton Index (EQR)
 Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeNphytspec	Nspecies_phytoplankton	Phytoplankton species richness	Phytoplankton species richness
@@ -40,7 +40,7 @@ Lakes	Biological	Fish	Composition and abundance	LakeEQR8	EQR8	EQR8	EQR8
 Lakes	Biological	Fish	Composition and abundance	LakeEindexW3	EindexW3	EindexW3	EindexW3
 Lakes	Biological	Fish	Composition and abundance	LakeAindexW5	AindexW5	AindexW5	AindexW5
 Lakes	Supporting	Nutrients	Phosphorus	LakeTPsummerEQR	TP	Total Phosphorus	Total Phosphorus (EQR)
-Lakes	Supporting	Water transparency	Secchi depth	LakeSecchiEQR	SecchiDepth	Secchi depth	Secchi depth
+Lakes	Supporting	Water transparency	Secchi depth	LakeSecchiDepthEQR	SecchiDepth	Secchi depth	Secchi depth
 Lakes	Supporting	Oxygen	Oxygen	LakeOxygen	Oxygen	Oxygen	Oxygen
 Lakes	Supporting	Acidification	pH	LakepHchange	pH	pH	pH
 Rivers	Biological	AquaticFlora	Composition	RiverIPS	BenthicDiatomsIPS	BenthicDiatomsIPS	BenthicDiatomsIPS

@@ -175,9 +175,12 @@ AggregateEQRtrunc_N_period <- function(df) {
 # SPECIAL CASES FOR COASTAL INDICATORS
 # Calculation of BQI indicator according to Handbook
 BQIbootstrap <- function(df) {
+  error_code <- 0
   yearstatmeans <- df %>%    group_by(year,station) %>%
     summarise(xvar = mean(xvar,na.rm = TRUE))
   Nyearstat <- yearstatmeans %>% group_by(year) %>% summarise(n_station = length(xvar))
+# Check if fewer than 5 stations and years - error_code=-93
+  if (sum(Nyearstat$n_station)<5) error_code <- -93
   BQIsimyear <- mat.or.vec(length(Nyearstat$n_station), 1)
   for(i in 1:length(Nyearstat$n_station)) {
      BQIsim <- trunc(runif(9999,1,Nyearstat$n_station[i]+1))
@@ -187,8 +190,18 @@ BQIbootstrap <- function(df) {
 
   periodmean <- mean(BQIsimyear)
   yearmeans <- data.frame(year=Nyearstat$year,xvar = BQIsimyear)
-  res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
+  res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=error_code)
   return(res)  
+}
+
+# Oxygen in bottom water - calculate lower quartile
+OxygenLowerQuartile <- function(df) {
+  yearmeans <- df %>% group_by(year) %>%
+    summarise(xvar = quantile(xvar,probs=c(0.25),na.rm = TRUE))
+  
+  periodmean <- mean(yearmeans$xvar)
+  res <- list(periodmean=periodmean,yearmeans=yearmeans,error_code=0)
+  return(res)
 }
 
 # Calculation of Oxygen indicator according to Handbook
@@ -296,7 +309,7 @@ OxygenTest2 <- function(df) {
 #'   \item{institution}{Provider of the observation.} 
 #'   \item{chla}{Chlorophyll a concentration in sample.} 
 #'   
-#' @param MonthInclude A list of months to be included in the indicator
+#' @param RefCond_sali A vector of parameters to be parsed to the indicator calcutions (Ref Cond, salinity correction, Bathymetry)
 #' @param var_list List of variance components
 #' @param MonthInclude A list of month numbers for filtering data
 #' @param startyear The first year in the indicator calculation
@@ -314,6 +327,8 @@ CalculateIndicator <-
     flag <- 0
 # Select the observation variable for the indicator
     xvar <- switch(Indicator,
+                   CoastBQI          = df$BQI,
+                   CoastMSMDI        = df$MSMDI,
                    CoastChla         = df$chla,
                    CoastChlaEQR      = df$chla,
                    CoastBiovol       = df$biovol,
@@ -333,8 +348,8 @@ CalculateIndicator <-
                    CoastTPwinter     = df$TP,
                    CoastTPwinterEQR  = df$TP,
                    CoastOxygen       = df$O2,
-                   CoastBQI          = df$BQI,
-                   CoastMSMDI        = df$MSMDI,
+                   CoastBottomOxygen = df$O2_bot,
+                   CoastHypoxicArea  = df$HypoxicAreaPct,
                    LakeBiovol        = df$biovol,
                    LakeBiovolEQR     = df$biovol,
                    LakePropCyano     = df$Proportion_cyanobacteria,
@@ -370,6 +385,8 @@ CalculateIndicator <-
     df <- mutate(df,xvar=xvar)
 # Associating indicators with transformation from observations
     f_fun <- switch(Indicator,
+                    CoastBQI          = BQIbootstrap,
+                    CoastMSMDI        = Aggregate_period,
                     CoastChla         = Aggregate_year_station,
                     CoastChlaEQR      = AggregateEQRtrunc_year_station,
                     CoastBiovol       = Aggregate_year_station,
@@ -389,8 +406,8 @@ CalculateIndicator <-
                     CoastTPwinter     = Aggregate_year,
                     CoastTPwinterEQR  = AggregateEQR_year,
                     CoastOxygen       = OxygenTest2,
-                    CoastBQI          = BQIbootstrap,
-                    CoastMSMDI        = Aggregate_period,
+                    CoastBottomOxygen = OxygenLowerQuartile,
+                    CoastHypoxicArea  = Aggregate_year,
                     LakeBiovol        = Aggregate_period,
                     LakeBiovolEQR     = Aggregate_period_P_EQR,
                     LakePropCyano     = Aggregate_period,
@@ -425,6 +442,8 @@ CalculateIndicator <-
                     )
 # Assigning transformations for measurements to obtain normal distributed variates
     g_fun <- switch(Indicator,
+                    CoastBQI          = identity,
+                    CoastMSMDI        = logit_w_replace,
                     CoastChla         = log,
                     CoastChlaEQR      = log,
                     CoastBiovol       = log,
@@ -444,8 +463,8 @@ CalculateIndicator <-
                     CoastTPwinter     = log,
                     CoastTPwinterEQR  = log,
                     CoastOxygen       = identity,
-                    CoastBQI          = identity,
-                    CoastMSMDI        = logit_w_replace,
+                    CoastBottomOxygen = identity,
+                    CoastHypoxicArea  = logit_w_replace,
                     LakeBiovol        = log,
                     LakeBiovolEQR     = log,
                     LakePropCyano     = logit_w_replace,
@@ -480,6 +499,8 @@ CalculateIndicator <-
     )    
 # Assigning inverse transformations of g_fun
     g_fun_inv <- switch(Indicator,
+                    CoastBQI          = identity,
+                    CoastMSMDI        = plogis,
                     CoastChla         = exp,
                     CoastChlaEQR      = exp,
                     CoastBiovol       = exp,
@@ -499,8 +520,8 @@ CalculateIndicator <-
                     CoastTPwinter     = exp,
                     CoastTPwinterEQR  = exp,
                     CoastOxygen       = identity,
-                    CoastBQI          = identity,
-                    CoastMSMDI        = plogis,
+                    CoastBottomOxygen = identity,
+                    CoastHypoxicArea  = plogis,
                     LakeBiovol        = exp,
                     LakeBiovolEQR     = exp,
                     LakePropCyano     = plogis,
@@ -615,7 +636,7 @@ CalculateIndicator <-
                          upper_5  = apply(simresyear,1,quantile,probs=0.975,na.rm=TRUE),
                          upper_1  = apply(simresyear,1,quantile,probs=0.995,na.rm=TRUE))
     # Check if there is at least 3 years of data for those indicators with such specification
-    if(Indicator %in% c("CoastChla","CoastChlaEQR","CoastBiovol","CoastBiovolEQR","CoastDINwinter","CoastDINwinterEQR","CoastDIPwinter","CoastDIPwinterEQR","CoastTNsummer","CoastTNsummerEQR","CoastTPsummer","CoastTPsummerEQR","CoastTNwinter","CoastTNwinterEQR","CoastTPwinter","CoastTPwinterEQR","CoastOxygen",
+    if(Indicator %in% c("CoastChla","CoastChlaEQR","CoastBiovol","CoastBiovolEQR","CoastDINwinter","CoastDINwinterEQR","CoastDIPwinter","CoastDIPwinterEQR","CoastTNsummer","CoastTNsummerEQR","CoastTPsummer","CoastTPsummerEQR","CoastTNwinter","CoastTNwinterEQR","CoastTPwinter","CoastTPwinterEQR","CoastOxygen","CoastBottomOxygen","CoastHypoxicArea",
                         "LakeBiovol","LakeBiovolEQR","LakePropCyano","LakePropCyanoEQR","LakeNphytspec","LakeChla","LakeChlaEQR","LakeTPsummerEQR","LakeSecchiDepthEQR","RiverTPEQR")) { 
        flag <- ifelse(length(annual$mean)<3,-1,flag)
     }

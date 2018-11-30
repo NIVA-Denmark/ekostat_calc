@@ -22,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 1000  #number of Monte Carlo simulations
+nSimMC <- 2#500  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 #df1<-df
@@ -43,7 +43,8 @@ df[df$WB_ID=="SE673283-158060", "WB_ID"] <- "SE604200-171765" #Yttre Fjärden
 #Join waterbody district information to obs data
 df <- df %>%
   select(type,WB_ID,WB_name,station,date,station_depth,time,DIN,DIP,TN,TP,
-         sali,chla,biovol,secchi,institution,obspoint,depth,O2,BQI,MSMDI,
+         sali,chla,biovol,secchi,institution,obspoint,depth,O2,
+         O2_bot,HypoxicAreaPct,BQI,MSMDI,
          Year,Month,Period,Season) %>%
   left_join(df_wb,by = c("WB_ID"="WaterbodyID")) %>% 
   mutate(type=ifelse(type=="",TypeID,type))
@@ -76,7 +77,8 @@ df <- df %>% left_join(type,by=c("WB_ID"="WB_ID")) %>%
 
 df <- df %>% select(CLR,DistrictID,typology=type,station,WB_name,WB_ID,institution,station_depth,
                     date,time,sali,depth,secchi,
-                    DIN,DIP,TN,TP,chla,biovol,O2,BQI,MSMDI)
+                    DIN,DIP,TN,TP,chla,biovol,O2,
+                    O2_bot,HypoxicAreaPct,BQI,MSMDI)
 
 df$WB <- df$WB_ID
 df$obspoint <- df$station
@@ -105,6 +107,7 @@ df$O2<-ifelse(df$WB %in% c("SE563000-123351","SE582705-163350","SE583000-165600"
               NA,df$O2)
 }
 dfc <- df # df for coastal data
+#df <- df %>% filter(typology %in% c("10","11","12n","12s","13","14","15","24"))
 
 
 wb1<-1
@@ -115,6 +118,7 @@ source("read_freshwater_data.R", encoding="utf-8")
 # ------------ read boundary and indicator information ------------------------
 
 df.bounds<-ReadBounds()
+df.bounds$Worst<-as.numeric(df.bounds$Worst)
 df.bounds.hypox<-ReadBoundsHypoxicArea()
 df.bathy<-ReadBathymetry()
 df.indicators<-ReadIndicatorType()
@@ -122,8 +126,10 @@ df.variances<-ReadVariances()
 
 
 
-IndListAll<-c("CoastOxygen",    #1 Dissolved Oxygen (O2) 
-           "CoastSecchi",       #2 Secchi Depth 
+IndListAll<-c(#"CoastOxygen",    #1 Dissolved Oxygen (O2) 
+              "CoastBottomOxygen",
+              "CoastHypoxicArea",
+              "CoastSecchi",       #2 Secchi Depth 
            "CoastSecchiEQR",    #3 Secchi Depth (EQR) 
            "CoastDINwinter",    #4 Winter DIN 
            "CoastDINwinterEQR", #5 Winter DIN (EQR)
@@ -178,11 +184,23 @@ IndListAll<-c("CoastOxygen",    #1 Dissolved Oxygen (O2)
 
 IndList<-IndListAll
 
-df <- dfr
-df <- dfl
+iType=1
+if(iType==1){
+  df <- dfc
+  outputdb<-"output/ekostat_coast.db"
+  }
+if(iType==2){
+  df <- dfl
+  outputdb<-"output/ekostat_lake.db"
+  }
+if(iType==3){
+  df <- dfr
+  outputdb<-"output/ekostat_river.db"
+  }
 
+df <- bind_rows(df,dfl,dfr)
 
-wblist<-distinct(df,WB,typology)
+wblist<-distinct(df,WB,typology,CLR)
 wbcount<-nrow(wblist)
 
 # Loop through distinct waterbodies and periods in the data
@@ -192,22 +210,22 @@ bAPP<-FALSE
 #bAPP<-TRUE
 
 #--------------------------------------------------------------------------------------
+#for(iWB in 53:wb1){
 for(iWB in wbcount:wb1){
 #for(iWB in 1:1){
-  cat(paste0("Time now: ",Sys.time(),"\n"))
   
   dfselect<-df %>% filter(WB == wblist$WB[iWB])
-  cat(paste0("WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")\n"))
+  cat(paste0(wblist$CLR[iWB]," WB: ",wblist$WB[iWB]," (",iWB," of ",wbcount ,")\n"))
   
   AssessmentResults <- Assessment(dfselect, nsim = nSimMC, IndList,df.bounds,df.bounds.hypox,df.bathy,df.indicators,df.variances)
   
-  cat(paste0("           time elapsed: ",Sys.time() - start_time,"\n"))
+  cat(paste0("Time: ",Sys.time(),"  (elapsed: ",round(Sys.time() - start_time,4),")\n"))
   
   resAvg <- AssessmentResults[[1]]
   resMC <- AssessmentResults[[2]]
   resErr <- AssessmentResults[[3]]
   resYear <- AssessmentResults[[4]]
-  db <- dbConnect(SQLite(), dbname="output/ekostat_fresh.db")
+  db <- dbConnect(SQLite(), dbname=outputdb)
   
   if(!is.na(resAvg)){
     WB <- resAvg %>% group_by(WB,Type,Period,Region,Typename) %>% summarise()
