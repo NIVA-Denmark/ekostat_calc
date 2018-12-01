@@ -22,7 +22,7 @@ source("ReadVariances.R")
 
 
 start_time <- Sys.time()
-nSimMC <- 2#500  #number of Monte Carlo simulations
+nSimMC <- 20#0  #number of Monte Carlo simulations
 
 load("data/SASdata.Rda")
 #df1<-df
@@ -106,7 +106,10 @@ df$O2<-ifelse(df$WB=="SE636570-203590" &
 df$O2<-ifelse(df$WB %in% c("SE563000-123351","SE582705-163350","SE583000-165600"),
               NA,df$O2)
 }
+
+
 dfc <- df # df for coastal data
+dfc <- dfc %>% mutate(typology_varcomp=typology)
 #df <- df %>% filter(typology %in% c("10","11","12n","12s","13","14","15","24"))
 
 
@@ -184,21 +187,22 @@ IndListAll<-c(#"CoastOxygen",    #1 Dissolved Oxygen (O2)
 
 IndList<-IndListAll
 
-iType=1
-if(iType==1){
-  df <- dfc
-  outputdb<-"output/ekostat_coast.db"
-  }
-if(iType==2){
-  df <- dfl
-  outputdb<-"output/ekostat_lake.db"
-  }
-if(iType==3){
-  df <- dfr
-  outputdb<-"output/ekostat_river.db"
-  }
 
-df <- bind_rows(df,dfl,dfr)
+  #df <- dfc
+  #df <- dfl
+  #df <- dfr
+  outputdb<-"output/ekostat_coast1.db"
+  #outputdb<-"output/ekostat_lake.db"
+  #outputdb<-"output/ekostat_river.db"
+
+
+df <- bind_rows(dfc,dfl,dfr)
+
+#wbselect<-c("SE642489-151724"
+#wbselect<-c("SE642489-151724","SE673813-153174")
+wbselect<-c("SE583000-165600")
+df <- df %>% filter(WB %in% wbselect)
+
 
 wblist<-distinct(df,WB,typology,CLR)
 wbcount<-nrow(wblist)
@@ -219,7 +223,8 @@ for(iWB in wbcount:wb1){
   
   AssessmentResults <- Assessment(dfselect, nsim = nSimMC, IndList,df.bounds,df.bounds.hypox,df.bathy,df.indicators,df.variances)
   
-  cat(paste0("Time: ",Sys.time(),"  (elapsed: ",round(Sys.time() - start_time,4),")\n"))
+  ETA <- Sys.time() + (Sys.time() - start_time)*(wbcount/(wbcount-iWB))
+  cat(paste0("Time: ",Sys.time(),"  (elapsed: ",round(Sys.time() - start_time,4),") ETA=",ETA,"\n"))
   
   resAvg <- AssessmentResults[[1]]
   resMC <- AssessmentResults[[2]]

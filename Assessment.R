@@ -495,6 +495,7 @@ VarianceComponents<-function(df.indicators,df.variances,typology,indicator){
                         V_institution=df.variances$V_institution[1],
                         V_replication=df.variances$V_replication[1])
   variance_list <- lapply(variance_list, function(x) ifelse(is.na(x),0,x))
+  
   return(variance_list)
 }
 
@@ -516,7 +517,7 @@ IndicatorResults<-function(df,typology,typology_varcomp,df.bounds,df.indicators,
   
   variance_list<- VarianceComponents(df.indicators,df.variances,typology_varcomp,indicator)
   #cat(paste0(indicator,"\n"))
-    #browser()
+    browser()
   res<-CalculateIndicator(indicator,df,RefCond_sali,variance_list,MonthInclude,startyear,endyear,n_iter=nsim)
 
 }

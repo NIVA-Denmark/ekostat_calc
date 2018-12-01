@@ -1,60 +1,60 @@
-Water_type	QEtype	QualityElement	QualitySubelement	Indicator	Parameter	Measurement	IndicatorDescription
-Coastal	Biological	Phytoplankton	Phytoplankton biomass	CoastChla	chla	Chlorophyll a	Chlorophyll a
-Coastal	Biological	Phytoplankton	Phytoplankton biomass	CoastChlaEQR	chla	Chlorophyll a	Chlorophyll a (EQR)
-Coastal	Biological	Phytoplankton	Phytoplankton biomass	CoastBiovol	biovol	Phytoplankton biovolume	Phytoplankton biovolume
-Coastal	Biological	Phytoplankton	Phytoplankton biomass	CoastBiovolEQR	biovol	Phytoplankton biovolume	Phytoplankton biovolume (EQR)
-Coastal	Biological	Benthic fauna	Composition and diversity	CoastBQI	BQI	BQI	Benthic Quality Index (BQI)
-Coastal	Biological	Benthic vegetation	Composition and abundance	CoastMSMDI	MSMDI	MSMDI	Multi-Species Maximum Depth Index (MSMDI)
-Coastal	Supporting	Water transparency	Secchi depth	CoastSecchi	secchi	Secchi depth	Secchi Depth
-Coastal	Supporting	Water transparency	Secchi depth	CoastSecchiEQR	secchi	Secchi depth	Secchi Depth (EQR)
-Coastal	Supporting	Nutrients	Nitrogen	CoastDINwinter	DIN	Dissolved Inorganic Nitrogen	Winter DIN concentration
-Coastal	Supporting	Nutrients	Nitrogen	CoastDINwinterEQR	TN	Dissolved Inorganic Nitrogen	Summer TN concentration
-Coastal	Supporting	Nutrients	Nitrogen	CoastTNsummer	TN	Total Nitrogen	Winter TN concentration
-Coastal	Supporting	Nutrients	Nitrogen	CoastTNsummerEQR	DIP	Total Nitrogen	Winter DIP
-Coastal	Supporting	Nutrients	Nitrogen	CoastTNwinter	TP	Total Nitrogen	Summer TP
-Coastal	Supporting	Nutrients	Nitrogen	CoastTNwinterEQR	TP	Total Nitrogen	Winter TP
-Coastal	Supporting	Nutrients	Phosphorus	CoastDIPwinter	DIN	Dissolved Inorganic Phosphorus	Winter DIN concentration (EQR)
-Coastal	Supporting	Nutrients	Phosphorus	CoastDIPwinterEQR	TN	Dissolved Inorganic Phosphorus	Summer TN concentration (EQR)
-Coastal	Supporting	Nutrients	Phosphorus	CoastTPsummer	TN	Total Phosphorus	Winter TN concentration (EQR)
-Coastal	Supporting	Nutrients	Phosphorus	CoastTPsummerEQR	DIP	Total Phosphorus	Winter DIP (EQR)
-Coastal	Supporting	Nutrients	Phosphorus	CoastTPwinter	TP	Total Phosphorus	Summer TP (EQR)
-Coastal	Supporting	Nutrients	Phosphorus	CoastTPwinterEQR	TP	Total Phosphorus	Winter TP (EQR)
-Coastal	Supporting	Oxygen	Oxygen	CoastBottomOxygen	O2	Oxygen Bottom Water	Oxygen Concentration
-Coastal	Supporting	Oxygen	Oxygen	CoastHypoxicArea	??	Area affected by hypoxia (%)	Area affected by hypoxia (%)
-Coastal	Supporting	Oxygen	Oxygen	CoastOxygen	??	Oxygen	Oxygen
-Lakes	Biological	Phytoplankton	Phytoplankton biomass	LakeBiovol	biovol	Phytoplankton biovolume	Phytoplankton biovolume
-Lakes	Biological	Phytoplankton	Phytoplankton biomass	LakeBiovolEQR	biovol	Phytoplankton biovolume	Phytoplankton biovolume
-Lakes	Biological	Phytoplankton	Phytoplankton composition	LakePropCyano	Proportion_cyanobacteria	Proportion cyanobacteria	Proportion cyanobacteria
-Lakes	Biological	Phytoplankton	Phytoplankton composition	LakePropCyanoEQR	Proportion_cyanobacteria	Proportion cyanobacteria	Proportion cyanobacteria (EQR)
-Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeTPI	TrophicPlanktonIndex	Trophic Phytoplankton Index	Trophic Phytoplankton Index
-Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeTPIEQR	TrophicPlanktonIndex	Trophic Phytoplankton Index	Trophic Phytoplankton Index (EQR)
-Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeNphytspec	Nspecies_phytoplankton	Phytoplankton species richness	Phytoplankton species richness
-Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeNphytspecEQR	Nspecies_phytoplankton	Phytoplankton species richness	Phytoplankton species richness (EQR)
-Lakes	Biological	Phytoplankton	Phytoplankton biomass	LakeChla	chla	Chlorophyll a	Chlorophyll a
-Lakes	Biological	Phytoplankton	Phytoplankton biomass	LakeChlaEQR	chla	Chlorophyll a	Chlorophyll a (EQR)
-Lakes	Biological	Macrophytes	Phytoplankton biomass	LakeTMIEQR	TrophicMacrophyteIndex	TrophicMacrophyteIndex	TrophicMacrophyteIndex (EQR)
-Lakes	Biological	Benthic invertebrates	Composition and abundance	LakeASPTEQR	BenthicInvertebratesASPT	BenthicInvertebratesASPT	BenthicInvertebratesASPT
-Lakes	Biological	Benthic invertebrates	Composition and abundance	LakeMILAEQR	BenthicInvertebratesMILA	BenthicInvertebratesMILA	BenthicInvertebratesMILA
-Lakes	Biological	Benthic invertebrates	Composition and abundance	LakeBQIEQR	BenthicInvertebratesBQI	BenthicInvertebratesBQI	BenthicInvertebratesBQI
-Lakes	Biological	Fish	Composition and abundance	LakeEQR8	EQR8	EQR8	EQR8
-Lakes	Biological	Fish	Composition and abundance	LakeEindexW3	EindexW3	EindexW3	EindexW3
-Lakes	Biological	Fish	Composition and abundance	LakeAindexW5	AindexW5	AindexW5	AindexW5
-Lakes	Supporting	Nutrients	Phosphorus	LakeTPsummerEQR	TP	Total Phosphorus	Total Phosphorus (EQR)
-Lakes	Supporting	Water transparency	Secchi depth	LakeSecchiDepthEQR	SecchiDepth	Secchi depth	Secchi depth
-Lakes	Supporting	Oxygen	Oxygen	LakeOxygen	Oxygen	Oxygen	Oxygen
-Lakes	Supporting	Acidification	pH	LakepHchange	pH	pH	pH
-Rivers	Biological	AquaticFlora	Composition	RiverIPS	BenthicDiatomsIPS	BenthicDiatomsIPS	BenthicDiatomsIPS
-Rivers	Biological	AquaticFlora	Composition	RiverIPSEQR	BenthicDiatomsIPS	BenthicDiatomsIPS	BenthicDiatomsIPS (EQR)
-Rivers	Supporting	AquaticFlora	Composition	RiverPctPT	BenthicDiatomsPctPT	BenthicDiatomsPctPT	BenthicDiatomsPctPT
-Rivers	Supporting	AquaticFlora	Composition	RiverTDI	BenthicDiatomsTDI	BenthicDiatomsTDI	BenthicDiatomsTDI
-Rivers	Biological	AquaticFlora	Composition	RiverACID	BenthicDiatomsACID	BenthicDiatomsACID	BenthicDiatomsACID
-Rivers	Biological	Benthic invertebrates	Composition and abundance	RiverASPTEQR	BenthicInvertebratesASPT	BenthicInvertebratesASPT	BenthicInvertebratesASPT (EQR)
-Rivers	Biological	Benthic invertebrates	Composition and abundance	RiverDJEQR	BenthicInvertebratesDJ	BenthicInvertebratesDJ	BenthicInvertebratesDJ (EQR)
-Rivers	Biological	Benthic invertebrates	Composition and abundance	RiverMISAEQR	BenthicInvertebratesMISA	BenthicInvertebratesMISA	BenthicInvertebratesMISA (EQR)
-Rivers	Biological	Fish	Composition and abundance	RiverVIX	VIX	FishVIX	FishVIX
-Rivers	Biological	Fish	Composition and abundance	RiverVIXs	VIXsm	FishVIXsm	FishVIXsm
-Rivers	Biological	Fish	Composition and abundance	RiverVIXm	VIXsm	FishVIXsm	FishVIXsm
-Rivers	Biological	Fish	Composition and abundance	RiverVIXh	VIXh	FishVIXh	FishVIXh
-Rivers	Supporting	Nutrients	Nitrogen	RiverTNsummer	TN	Total Nitrogen	Total Nitrogen
-Rivers	Supporting	Nutrients	Phosphorus	RiverTPEQR	TP	Total Phosphorus	Total Phosphorus (EQR)
-Rivers	Supporting	Acidification	pH	RiverpHchange	pH	pH	pH
+Water_type	QEtype	QualityElement	QualitySubelement	Indicator	Parameter	Measurement	IndicatorDescription	Nutrient loading	Organic loading	Acidification	Harmful substances	Hydrological changes	Morphological changes	General pressure	Nutrients
+Coastal	Biological	Phytoplankton	Phytoplankton biomass	CoastChla	chla	Chlorophyll a	Chlorophyll a								X
+Coastal	Biological	Phytoplankton	Phytoplankton biomass	CoastChlaEQR	chla	Chlorophyll a	Chlorophyll a (EQR)	X							
+Coastal	Biological	Phytoplankton	Phytoplankton biomass	CoastBiovol	biovol	Phytoplankton biovolume	Phytoplankton biovolume								X
+Coastal	Biological	Phytoplankton	Phytoplankton biomass	CoastBiovolEQR	biovol	Phytoplankton biovolume	Phytoplankton biovolume (EQR)	X							
+Coastal	Biological	Benthic fauna	Composition and diversity	CoastBQI	BQI	BQI	Benthic Quality Index (BQI)	X	X						X
+Coastal	Biological	Benthic vegetation	Composition and abundance	CoastMSMDI	MSMDI	MSMDI	Multi-Species Maximum Depth Index (MSMDI)	X							X
+Coastal	Supporting	Water transparency	Secchi depth	CoastSecchi	secchi	Secchi depth	Secchi Depth								X
+Coastal	Supporting	Water transparency	Secchi depth	CoastSecchiEQR	secchi	Secchi depth	Secchi Depth (EQR)	X	X						
+Coastal	Supporting	Nutrients	Nitrogen	CoastDINwinter	DIN	Dissolved Inorganic Nitrogen	Winter DIN conc.								X
+Coastal	Supporting	Nutrients	Nitrogen	CoastDINwinterEQR	DIN	Dissolved Inorganic Nitrogen	Winter DIN conc. (EQR)	X							
+Coastal	Supporting	Nutrients	Nitrogen	CoastTNsummer	TN	Total Nitrogen	Summer TN conc.								X
+Coastal	Supporting	Nutrients	Nitrogen	CoastTNsummerEQR	TN	Total Nitrogen	Summer TN conc. (EQR)	X							
+Coastal	Supporting	Nutrients	Nitrogen	CoastTNwinter	TN	Total Nitrogen	Winter TN conc.								X
+Coastal	Supporting	Nutrients	Nitrogen	CoastTNwinterEQR	TN	Total Nitrogen	Winter TN conc. (EQR)	X							
+Coastal	Supporting	Nutrients	Phosphorus	CoastDIPwinter	DIP	Dissolved Inorganic Phosphorus	Winter DIP conc.								X
+Coastal	Supporting	Nutrients	Phosphorus	CoastDIPwinterEQR	DIP	Dissolved Inorganic Phosphorus	Winter DIP conc. (EQR)	X							
+Coastal	Supporting	Nutrients	Phosphorus	CoastTPsummer	TP	Total Phosphorus	Summer TP conc.								X
+Coastal	Supporting	Nutrients	Phosphorus	CoastTPsummerEQR	TP	Total Phosphorus	Summer TP conc. (EQR)	X							
+Coastal	Supporting	Nutrients	Phosphorus	CoastTPwinter	TP	Total Phosphorus	Winter TP conc.								X
+Coastal	Supporting	Nutrients	Phosphorus	CoastTPwinterEQR	TP	Total Phosphorus	Winter TP conc. (EQR)	X							
+Coastal	Supporting	Oxygen	Oxygen	CoastOxygen	O2	Oxygen	Oxygen Concentration	X	X					X	X
+Coastal	Supporting	Oxygen	Oxygen	CoastHypoxicArea	HypoxicAreaPct	Area affected by hypoxia (%)	Area affected by hypoxia (%)	X	X					X	X
+Coastal	Supporting	Oxygen	Oxygen	CoastBottomOxygen	O2_bot	Oxygen Bottom Water	Oxygen	X	X					X	X
+Lakes	Biological	Phytoplankton	Phytoplankton biomass	LakeBiovol	biovol	Phytoplankton biovolume	Phytoplankton biovolume	X							X
+Lakes	Biological	Phytoplankton	Phytoplankton biomass	LakeBiovolEQR	biovol	Phytoplankton biovolume	Phytoplankton biovolume	X							X
+Lakes	Biological	Phytoplankton	Phytoplankton composition	LakePropCyano	Proportion_cyanobacteria	Proportion cyanobacteria	Proportion cyanobacteria	X							X
+Lakes	Biological	Phytoplankton	Phytoplankton composition	LakePropCyanoEQR	Proportion_cyanobacteria	Proportion cyanobacteria	Proportion cyanobacteria (EQR)	X							X
+Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeTPI	TrophicPlanktonIndex	TrophicPhytoplanktonIndex	Trophic Phytoplankton Index	X							X
+Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeTPIEQR	TrophicPlanktonIndex	TrophicPhytoplanktonIndex	Trophic Phytoplankton Index (EQR)	X							X
+Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeNphytspec	Nspecies_phytoplankton	Nspecies_phytoplankton	Phytoplankton species richness			X					
+Lakes	Biological	Phytoplankton	Phytoplankton composition	LakeNphytspecEQR	Nspecies_phytoplankton	Nspecies_phytoplankton	Phytoplankton species richness (EQR)			X					
+Lakes	Biological	Phytoplankton	Phytoplankton biomass	LakeChla	chla	Chlorophyll a	Chlorophyll a	X							X
+Lakes	Biological	Phytoplankton	Phytoplankton biomass	LakeChlaEQR	chla	Chlorophyll a	Chlorophyll a (EQR)	X							X
+Lakes	Biological	Macrophytes	Phytoplankton biomass	LakeTMIEQR	TrophicMacrophyteIndex	TrophicMacrophyteIndex	TrophicMacrophyteIndex (EQR)	X							X
+Lakes	Biological	Benthic invertebrates	Composition and abundance	LakeASPTEQR	BenthicInvertebratesASPT	BenthicInvertebratesASPT	BenthicInvertebratesASPT							X	
+Lakes	Biological	Benthic invertebrates	Composition and abundance	LakeMILAEQR	BenthicInvertebratesMILA	BenthicInvertebratesMILA	BenthicInvertebratesMILA			X					
+Lakes	Biological	Benthic invertebrates	Composition and abundance	LakeBQIEQR	BenthicInvertebratesBQI	BenthicInvertebratesBQI	BenthicInvertebratesBQI	X	X						X
+Lakes	Biological	Fish	Composition and abundance	LakeEQR8	EQR8	EQR8	EQR8								
+Lakes	Biological	Fish	Composition and abundance	LakeEindexW3	EindexW3	EindexW3	EindexW3	X							X
+Lakes	Biological	Fish	Composition and abundance	LakeAindexW5	AindexW5	AindexW5	AindexW5			X					
+Lakes	Supporting	Nutrients	Phosphorus	LakeTPsummerEQR	TP	Total Phosphorus	Total Phosphorus (EQR)	X							X
+Lakes	Supporting	Water transparency	Secchi depth	LakeSecchiDepthEQR	SecchiDepth	Secchi depth	Secchi depth	X	X						X
+Lakes	Supporting	Oxygen	Oxygen	LakeOxygen	Oxygen	Oxygen	Oxygen	X	X					X	X
+Lakes	Supporting	Acidification	pH	LakepHchange	pH	pH	pH			X					
+Rivers	Biological	AquaticFlora	Composition	RiverIPS	BenthicDiatomsIPS	BenthicDiatomsIPS	BenthicDiatomsIPS	X	X						X
+Rivers	Biological	AquaticFlora	Composition	RiverIPSEQR	BenthicDiatomsIPS	BenthicDiatomsIPS	BenthicDiatomsIPS (EQR)	X	X						X
+Rivers	Supporting	AquaticFlora	Composition	RiverPctPT	BenthicDiatomsPctPT	BenthicDiatomsPctPT	BenthicDiatomsPctPT	X	X						X
+Rivers	Supporting	AquaticFlora	Composition	RiverTDI	BenthicDiatomsTDI	BenthicDiatomsTDI	BenthicDiatomsTDI	X	X						X
+Rivers	Biological	AquaticFlora	Composition	RiverACID	BenthicDiatomsACID	BenthicDiatomsACID	BenthicDiatomsACID			X					
+Rivers	Biological	Benthic invertebrates	Composition and abundance	RiverASPTEQR	BenthicInvertebratesASPT	ASPT	BenthicInvertebratesASPT (EQR)							X	
+Rivers	Biological	Benthic invertebrates	Composition and abundance	RiverDJEQR	BenthicInvertebratesDJ	DJ-Index	BenthicInvertebratesDJ (EQR)	X							X
+Rivers	Biological	Benthic invertebrates	Composition and abundance	RiverMISAEQR	BenthicInvertebratesMISA	MISA	BenthicInvertebratesMISA (EQR)			X					
+Rivers	Biological	Fish	Composition and abundance	RiverVIX	VIX	FishVIX	FishVIX	X		X		X	X		X
+Rivers	Biological	Fish	Composition and abundance	RiverVIXs	FishVIXsm	FishVIXsm	FishVIXsm	X		X		X	X		X
+Rivers	Biological	Fish	Composition and abundance	RiverVIXm	FishVIXsm	FishVIXsm	FishVIXsm								
+Rivers	Biological	Fish	Composition and abundance	RiverVIXh	VIXh	FishVIXh	FishVIXh	X		X		X	X		X
+Rivers	Supporting	Nutrients	Nitrogen	RiverTNEQR	TN	Total Nitrogen	Total Nitrogen	X							X
+Rivers	Supporting	Nutrients	Phosphorus	RiverTPEQR	TP	Total Phosphorus	Total Phosphorus (EQR)	X							X
+Rivers	Supporting	Acidification	pH	RiverpHchange	pH	pH	pH			X					
